@@ -31,9 +31,9 @@ class _ImportWalletState extends State<ImportWallet> {
         setState(() {
           isVerified = true;
         });
+        verificationText = verificationText.trim();
 
-        print(
-            "Public key: ${await walletProvider.importWalletFromSeed(verificationText)}");
+        walletProvider.importWalletFromSeed(verificationText);
 
         setState(() {
           isVerified = true;

@@ -25,7 +25,7 @@ Future<String> getBalances(String address, String chain) async {
   );
 
   if (response.statusCode == 200) {
-    var jsonResponse = jsonDecode(response.body);
+    var jsonResponse = jsonDecode(response.body);    
 
     String hexResult = jsonResponse['result'];
     int decimalValue = int.parse(hexResult.substring(2), radix: 16);

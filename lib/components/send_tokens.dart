@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:web3dart/web3dart.dart';
 
 class SendTokensPage extends StatelessWidget {
@@ -61,28 +59,29 @@ class SendTokensPage extends StatelessWidget {
   }
 
   void sendTransaction(String receiver, EtherAmount txValue) async {
-    var apiUrl = dotenv.env['ALCHEMY_API_KEY'];
-    var httpClient = http.Client();
-    var ethClient = Web3Client(apiUrl!, httpClient);
+    // var apiUrl = dotenv.env['ALCHEMY_API_KEY'];
+    // var httpClient = http.Client();
+    // var ethClient = Web3Client(apiUrl!, httpClient);
 
-    EthPrivateKey credentials = EthPrivateKey.fromHex('0x$privateKey');
-    print(credentials.address.hex);
-    print(privateKey);
+    // EthPrivateKey credentials = EthPrivateKey.fromHex('0x$privateKey');
+    // print(credentials.address.hex);
+    // print(privateKey);
 
-    EtherAmount etherAmount = await ethClient.getBalance(credentials.address);
-    EtherAmount gasPrice = await ethClient.getGasPrice();
+    // EtherAmount etherAmount = await ethClient.getBalance(credentials.address);
+    // EtherAmount gasPrice = await ethClient.getGasPrice();
 
-    print(etherAmount);
+    // print(etherAmount);
 
-    await ethClient.sendTransaction(
-      credentials,
-      Transaction(
-        to: EthereumAddress.fromHex(receiver),
-        gasPrice: gasPrice,
-        maxGas: 100000,
-        value: txValue,
-      ),
-      chainId: 11155111,
-    );
+    // await ethClient.sendTransaction(
+    //   credentials,
+    //   Transaction(
+    //     to: EthereumAddress.fromHex(receiver),
+    //     gasPrice: gasPrice,
+    //     maxGas: 100000,
+    //     value: txValue,
+    //   ),
+    //   chainId: 11155111,
+    // );
+    final EthPrivateKey credentials = EthPrivateKey.fromHex('0x$privateKey');
   }
 }

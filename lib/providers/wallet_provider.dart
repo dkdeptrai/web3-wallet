@@ -1,7 +1,5 @@
 import 'package:dart_bip32_bip44_noflutter/dart_bip32_bip44_noflutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hd_wallet_kit/hd_wallet_kit.dart';
-import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
@@ -55,20 +53,16 @@ class WalletProvider extends ChangeNotifier implements WalletAddressService {
 
   @override
   Future<EthereumAddress> importWalletFromSeed(String mnemonic) async {
-    // final privateKey = await getPrivateKey(mnemonic);
-
-    // final publicKey = await getPublicKey(privateKey);
-    // return publicKey;
-
     const String path = 'm/44\'/60\'/0\'/0/0';
     final String seed = bip39.mnemonicToSeedHex(mnemonic);
     final Chain chain = Chain.seed(seed);
     final ExtendedKey extendedKey = chain.forPath(path);
+
     final privateKey = extendedKey.privateKeyHex();
     final publicKey = await getPublicKey(privateKey);
+
     setPrivateKey(privateKey);
-    print(
-        "privateKey: $privateKey, publicKey: $publicKey, publicKeyFromExtendedKey: ${extendedKey.publicKey()}");
+
     return publicKey;
   }
 
