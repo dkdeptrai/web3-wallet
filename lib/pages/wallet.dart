@@ -132,6 +132,7 @@ class _WalletPageState extends State<WalletPage> {
                     onPressed: () {
                       setState(() {
                         loadWalletData();
+                        print(pvKey);
                       });
                     },
                     child: const Icon(Icons.replay_outlined),
