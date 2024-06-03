@@ -1,14 +1,54 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:web3_wallet/services/transaction_service.dart';
 
-class SendTokensPage extends StatelessWidget {
+class SendTokensPage extends StatefulWidget {
   final String privateKey;
+
+  const SendTokensPage({Key? key, required this.privateKey}) : super(key: key);
+
+  @override
+  _SendTokensPageState createState() => _SendTokensPageState();
+}
+
+class _SendTokensPageState extends State<SendTokensPage> {
   final TextEditingController recipientController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
+  late SepoliaTransactionService sepoliaTransactionService;
+  bool isLoading = false; // Add this line to track loading state
 
-  SendTokensPage({Key? key, required this.privateKey}) : super(key: key);
+  @override
+  void initState() {
+    super.initState();
+    sepoliaTransactionService = SepoliaTransactionService();
+    _initializeService();
+  }
+
+  Future<void> _initializeService() async {
+    await sepoliaTransactionService.init();
+  }
+
+  @override
+  void dispose() {
+    recipientController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
+  Future<void> sendTransaction() async {
+    String recipient = recipientController.text;
+    String amount = amountController.text;
+    if (recipient.isEmpty || amount.isEmpty) {
+      return;
+    }
+    isLoading = true;
+    final res = await sepoliaTransactionService.sendTransaction(
+        amountToSend: amount.trim(),
+        privateKey: widget.privateKey,
+        recipientAddress: recipient.trim());
+    isLoading = false;
+    print('Transaction hash: $res');
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,50 +78,22 @@ class SendTokensPage extends StatelessWidget {
                   const TextInputType.numberWithOptions(decimal: true),
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                String recipient = recipientController.text;
-                double amount = double.parse(amountController.text);
-                BigInt bigIntValue = BigInt.from(amount * pow(10, 18));
-                print(bigIntValue);
-                EtherAmount ethAmount =
-                    EtherAmount.fromBigInt(EtherUnit.wei, bigIntValue);
-                print(ethAmount);
-                // Convert the amount to EtherAmount
-                sendTransaction(recipient, ethAmount);
+            FutureBuilder(
+              future: sendTransaction(), // Use FutureBuilder here
+              builder: (context, snapshot) {
+                if (isLoading) {
+                  return const CircularProgressIndicator();
+                } else {
+                  return ElevatedButton(
+                    onPressed: () => sendTransaction(),
+                    child: const Text('Send'),
+                  );
+                }
               },
-              child: const Text('Send'),
             ),
           ],
         ),
       ),
     );
-  }
-
-  void sendTransaction(String receiver, EtherAmount txValue) async {
-    // var apiUrl = dotenv.env['ALCHEMY_API_KEY'];
-    // var httpClient = http.Client();
-    // var ethClient = Web3Client(apiUrl!, httpClient);
-
-    // EthPrivateKey credentials = EthPrivateKey.fromHex('0x$privateKey');
-    // print(credentials.address.hex);
-    // print(privateKey);
-
-    // EtherAmount etherAmount = await ethClient.getBalance(credentials.address);
-    // EtherAmount gasPrice = await ethClient.getGasPrice();
-
-    // print(etherAmount);
-
-    // await ethClient.sendTransaction(
-    //   credentials,
-    //   Transaction(
-    //     to: EthereumAddress.fromHex(receiver),
-    //     gasPrice: gasPrice,
-    //     maxGas: 100000,
-    //     value: txValue,
-    //   ),
-    //   chainId: 11155111,
-    // );
-    final EthPrivateKey credentials = EthPrivateKey.fromHex('0x$privateKey');
   }
 }
