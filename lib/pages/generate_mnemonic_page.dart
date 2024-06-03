@@ -3,14 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:web3_wallet/providers/wallet_provider.dart';
 import 'package:web3_wallet/pages/verify_mnemonic_page.dart';
+import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/wallet_address_service.dart';
 
 class GenerateMnemonicPage extends StatelessWidget {
   const GenerateMnemonicPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final walletProvider = Provider.of<WalletProvider>(context);
-    final mnemonic = walletProvider.generateMnemonic();
+    final ethWalletService = ETHWalletService();
+    final mnemonic = ethWalletService.generateMnemonic();
     final mnemonicWords = mnemonic.split(' ');
 
     void copyToClipboard() {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web3_wallet/providers/wallet_provider.dart';
 import 'package:web3_wallet/pages/wallet.dart';
+import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/wallet_address_service.dart';
 
 class ImportWallet extends StatefulWidget {
   const ImportWallet({Key? key}) : super(key: key);
@@ -24,22 +26,14 @@ class _ImportWalletState extends State<ImportWallet> {
 
   @override
   Widget build(BuildContext context) {
-    void verifyMnemonic() async {
-      final walletProvider =
-          Provider.of<WalletProvider>(context, listen: false);
+    final walletService = ETHWalletService();
+    void importWallet() async {
       try {
-        setState(() {
-          isVerified = true;
-        });
         verificationText = verificationText.trim();
-
-        walletProvider.importWalletFromSeed(verificationText);
-
         setState(() {
           isVerified = true;
-          verificationText = '';
         });
-
+        walletService.importWalletFromSeed(verificationText);
         navigateToWalletPage();
       } catch (e) {
         setState(() {
@@ -50,21 +44,13 @@ class _ImportWalletState extends State<ImportWallet> {
       }
     }
 
-    void importWithPrivateKey() async {
-      final walletProvider =
-          Provider.of<WalletProvider>(context, listen: false);
+    void importWithPrivateKey2() async {
       try {
+        privateKeyText = privateKeyText.trim();
         setState(() {
           isVerified = true;
         });
-
-        await walletProvider.importWalletFromPrivateKey(privateKeyText);
-
-        setState(() {
-          isVerified = true;
-          privateKeyText = '';
-        });
-
+        walletService.importWalletFromPrivateKey(privateKeyText);
         navigateToWalletPage();
       } catch (e) {
         setState(() {
@@ -102,7 +88,7 @@ class _ImportWalletState extends State<ImportWallet> {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: verifyMnemonic,
+              onPressed: importWallet,
               child: const Text('Import'),
             ),
             const SizedBox(height: 24.0),
@@ -123,7 +109,7 @@ class _ImportWalletState extends State<ImportWallet> {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: importWithPrivateKey,
+              onPressed: importWithPrivateKey2,
               child: const Text('Import'),
             ),
             const SizedBox(height: 24.0),

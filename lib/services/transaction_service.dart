@@ -1,33 +1,64 @@
+import 'dart:math';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
 
-class TransactionService {
-  final String _apiUrl;
+abstract class TransactionService {
+  Future<void> init();
+  Future<String> sendTransaction({
+    required String privateKey,
+    required String recipientAddress,
+    required String amountToSend,
+  });
+}
+
+class SepoliaTransactionService extends TransactionService {
+  final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
   late Web3Client _client;
 
-  TransactionService(this._apiUrl);
+  SepoliaTransactionService();
+
+  @override
   Future<void> init() async {
-    _client = Web3Client(_apiUrl, Client());
+    _client = await Web3Client(_apiUrl, Client());
   }
 
-  Future<String> sendTransaction(
-      String privateKey, String recipientAddress, BigInt amountToSend) async {
-    EthPrivateKey ethKey = EthPrivateKey.fromHex(privateKey);
-    Credentials credentials = Credentials.fromPrivateKey(ethKey);
+  @override
+  Future<String> sendTransaction({
+    required String privateKey,
+    required String recipientAddress,
+    required String amountToSend,
+  }) async {
+    try {
+      final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
 
-    EthereumAddress recipient = EthereumAddress.fromHex(recipientAddress);
-    EtherAmount value = EtherAmount.fromBigInt(EtherUnit.wei, amountToSend);
+      final Credentials credentials = EthPrivateKey.fromHex(privateKey);
 
-    Transaction transaction = Transaction(
+      final gasPrice = await _client.getGasPrice();
+
+      final Transaction transaction = Transaction(
+        from: await credentials.address,
         to: EthereumAddress.fromHex(recipientAddress),
-        value: value,
-        maxGas: 100000,
-        gasPrice: EtherAmount.inWei(BigInt.one),
-        nonce: await _client.getTransactionCount(credentials.address));
-    transaction.signature = await credentials.signTransaction(transaction);
+        value: EtherAmount.inWei(amountInWei),
+        gasPrice: gasPrice,
+        maxGas: 20000000,
+      );
 
-    return await _client
-        .sendTransaction(credentials, transaction)
-        .then((txHash) => txHash.toString());
+      final signedTx = await _client.signTransaction(credentials, transaction,
+          chainId: 11155111);
+      final txHash = await _client.sendRawTransaction(signedTx);
+      TransactionReceipt? receipt;
+      while (receipt == null) {
+        await Future.delayed(
+            const Duration(seconds: 5)); // Poll every 5 seconds
+        receipt = await _client.getTransactionReceipt(txHash);
+      }
+
+      return txHash;
+    } catch (e) {
+      print('Transaction failed: $e');
+      throw ('Transaction failed: $e');
+    }
   }
 }

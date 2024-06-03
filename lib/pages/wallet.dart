@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web3_wallet/providers/wallet_provider.dart';
 import 'package:web3_wallet/pages/create_or_import.dart';
+import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/wallet_address_service.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3_wallet/utils/get_balances.dart';
 import 'package:web3_wallet/components/send_tokens.dart';
@@ -16,6 +18,8 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
+  final walletService = ETHWalletService();
+  final securedStorageWalletRepository = SecureStorageWalletRepository();
   String walletAddress = '';
   String balance = '';
   String pvKey = '';
@@ -27,12 +31,13 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   Future<void> loadWalletData() async {
-    final storage = FlutterSecureStorage();
-    String? privateKey = await storage.read(key: 'privateKey');
+    // final storage = FlutterSecureStorage();
+    // String? privateKey = await storage.read(key: 'privateKey');
+    String? privateKey = await securedStorageWalletRepository.getPrivateKey();
     if (privateKey != null) {
-      final walletProvider = WalletProvider();
-      await walletProvider.loadPrivateKey();
-      EthereumAddress address = await walletProvider.getPublicKey(privateKey);
+      // final walletProvider = WalletProvider();
+      // await walletProvider.loadPrivateKey();
+      EthereumAddress address = await walletService.getPublicKey(privateKey);
       print("Public Address: ${address.hex}");
       setState(() {
         walletAddress = address.hex;
@@ -197,10 +202,8 @@ class _WalletPageState extends State<WalletPage> {
                             leading: const Icon(Icons.logout),
                             title: const Text('Logout'),
                             onTap: () async {
-                              final walletProvider =
-                                  Provider.of<WalletProvider>(context,
-                                      listen: false);
-                              await walletProvider.deletePrivateKey();
+                              await securedStorageWalletRepository
+                                  .deletePrivateKey();
 
                               // ignore: use_build_context_synchronously
                               Navigator.pushAndRemoveUntil(
