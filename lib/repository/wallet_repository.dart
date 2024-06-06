@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class WalletRepository {
@@ -9,6 +11,7 @@ abstract class WalletRepository {
 class SecureStorageWalletRepository implements WalletRepository {
   final _storage = FlutterSecureStorage();
 
+  static const _tokenAddressesKey = 'tokenAddresses';
   @override
   Future<String?> getPrivateKey() async {
     return await _storage.read(key: 'privateKey');
@@ -22,5 +25,20 @@ class SecureStorageWalletRepository implements WalletRepository {
   @override
   Future<void> deletePrivateKey() async {
     await _storage.delete(key: 'privateKey');
+  }
+
+  Future<void> saveTokenAddress(String address) async {
+    List<String>? storedAddress = await getStoredTokenAddresses();
+    storedAddress?.add(address);
+    await _storage.write(
+        key: _tokenAddressesKey, value: jsonEncode(storedAddress));
+  }
+
+  Future<List<String>?> getStoredTokenAddresses() async {
+    String? storedAddressesJson = await _storage.read(key: _tokenAddressesKey);
+    if (storedAddressesJson != null) {
+      return jsonDecode(storedAddressesJson).cast<String>();
+    }
+    return [];
   }
 }

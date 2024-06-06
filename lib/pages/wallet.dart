@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:web3_wallet/providers/wallet_provider.dart';
+import 'package:web3_wallet/model/token_model.dart';
 import 'package:web3_wallet/pages/create_or_import.dart';
 import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/transaction_service.dart';
 import 'package:web3_wallet/services/wallet_address_service.dart';
 import 'package:web3dart/web3dart.dart';
-import 'package:web3_wallet/utils/get_balances.dart';
 import 'package:web3_wallet/components/send_tokens.dart';
 
 class WalletPage extends StatefulWidget {
@@ -18,39 +15,39 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  final walletService = ETHWalletService();
+  final walletAddressService = ETHWalletService();
   final securedStorageWalletRepository = SecureStorageWalletRepository();
+  late SepoliaTransactionService transactionService;
   String walletAddress = '';
   String balance = '';
   String pvKey = '';
+  List<Token> tokens = [];
 
   @override
   void initState() {
     super.initState();
+    transactionService = SepoliaTransactionService();
+    _initializeService();
     loadWalletData();
+    loadStoredTokens();
+  }
+
+  Future<void> _initializeService() async {
+    await transactionService.init();
   }
 
   Future<void> loadWalletData() async {
-    // final storage = FlutterSecureStorage();
-    // String? privateKey = await storage.read(key: 'privateKey');
     String? privateKey = await securedStorageWalletRepository.getPrivateKey();
     if (privateKey != null) {
-      // final walletProvider = WalletProvider();
-      // await walletProvider.loadPrivateKey();
-      EthereumAddress address = await walletService.getPublicKey(privateKey);
-      print("Public Address: ${address.hex}");
+      EthereumAddress address =
+          await walletAddressService.getPublicKey(privateKey);
       setState(() {
         walletAddress = address.hex;
         pvKey = privateKey;
       });
       print("Private Key: $pvKey");
-      String response = await getBalances(address.hex, 'sepolia');
-
-      String newBalance = response ?? '0';
-
-      // Transform balance from wei to ether
       EtherAmount latestBalance =
-          EtherAmount.fromBigInt(EtherUnit.wei, BigInt.parse(newBalance));
+          await transactionService.getBalance(address.hex);
       String latestBalanceInEther =
           latestBalance.getValueInUnit(EtherUnit.ether).toString();
 
@@ -58,6 +55,88 @@ class _WalletPageState extends State<WalletPage> {
         balance = latestBalanceInEther;
       });
     }
+  }
+
+  Future<void> loadStoredTokens() async {
+    List<String>? tokenAddresses =
+        await securedStorageWalletRepository.getStoredTokenAddresses();
+    if (tokenAddresses != null && tokenAddresses.isNotEmpty) {
+      for (String address in tokenAddresses) {
+        late OtherTokenService otherTokenService = OtherTokenService(address);
+        otherTokenService.init();
+
+        Map<String, dynamic> tokenDetails =
+            await otherTokenService.getTokenDetails();
+
+        EtherAmount balance = await otherTokenService.getBalance(walletAddress);
+        String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
+
+        print(
+            "Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+
+        bool tokenExists = tokens.any((token) =>
+            token.name == tokenDetails['name'] &&
+            token.symbol == tokenDetails['symbol']);
+
+        if (!tokenExists) {
+          Token token = Token(
+              name: tokenDetails['name'].toString(),
+              symbol: tokenDetails['symbol'].toString(),
+              balance: balanceStr);
+
+          tokens.add(token);
+        } else {
+          print(
+              "Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+        }
+      }
+    }
+  }
+
+  Future<void> importToken() async {
+    final TextEditingController controller = TextEditingController();
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Import Token"),
+            content: TextField(
+                controller: controller,
+                decoration:
+                    InputDecoration(hintText: "Enter token contract address")),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Cancel")),
+              TextButton(
+                  onPressed: () async {
+                    String address = controller.text.trim();
+                    if (address.isNotEmpty) {
+                      try {
+                        await securedStorageWalletRepository
+                            .saveTokenAddress(address);
+                        Navigator.of(context).pop();
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to import token: $e'),
+                          ),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter a valid address'),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text("Import"))
+            ],
+          );
+        });
   }
 
   @override
@@ -134,11 +213,13 @@ class _WalletPageState extends State<WalletPage> {
                 children: [
                   FloatingActionButton(
                     heroTag: 'refreshButton', // Unique tag for send button
-                    onPressed: () {
-                      setState(() {
-                        loadWalletData();
-                        print(pvKey);
-                      });
+                    onPressed: () async {
+                      tokens.clear();
+                      walletAddress = '';
+                      balance = '';
+                      await loadWalletData();
+                      await loadStoredTokens();
+                      setState(() {});
                     },
                     child: const Icon(Icons.replay_outlined),
                   ),
@@ -165,38 +246,31 @@ class _WalletPageState extends State<WalletPage> {
                     child: TabBarView(
                       children: [
                         // Assets Tab
-                        Column(
-                          children: [
-                            Card(
-                              margin: const EdgeInsets.all(16.0),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Sepolia ETH',
-                                      style: TextStyle(
-                                        fontSize: 24.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      balance,
-                                      style: const TextStyle(
-                                        fontSize: 24.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
+                        ListView.builder(
+                          itemCount: tokens.length + 2,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return ListTile(
+                                title: const Text("Sepolia ETH"),
+                                subtitle: Text(this.balance),
+                              );
+                            } else if (index == tokens.length + 1) {
+                              return ListTile(
+                                title: TextButton(
+                                    onPressed: () async => await importToken(),
+                                    child: const Text("Import Token")),
+                              );
+                            } else {
+                              Token token = tokens[index - 1];
+                              return ListTile(
+                                title: Text(token.name),
+                                subtitle: Text(token.balance),
+                              );
+                            }
+                          },
                         ),
-                        // NFTs Tab
-                        // Activities Tab
+
+                        // Options Tab
                         Center(
                           child: ListTile(
                             leading: const Icon(Icons.logout),
