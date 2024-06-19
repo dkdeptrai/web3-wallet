@@ -14,17 +14,21 @@ class _SendTokensPageState extends State<SendTokensPage> {
   final TextEditingController recipientController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   late SepoliaTransactionService sepoliaTransactionService;
+  late OtherTokenService testService;
   bool isLoading = false; // Add this line to track loading state
 
   @override
   void initState() {
     super.initState();
     sepoliaTransactionService = SepoliaTransactionService();
+    testService =
+        OtherTokenService("0xff1FA4a41703FC25e7216190eeF33abcB963ae67");
     _initializeService();
   }
 
   Future<void> _initializeService() async {
     await sepoliaTransactionService.init();
+    await testService.init();
   }
 
   @override
@@ -45,8 +49,13 @@ class _SendTokensPageState extends State<SendTokensPage> {
         amountToSend: amount.trim(),
         privateKey: widget.privateKey,
         recipientAddress: recipient.trim());
+
+    // Uncomment these lines to test sending tokens
+    // final res = await testService.sendTransaction(
+    //     amountToSend: amount.trim(),
+    //     privateKey: widget.privateKey,
+    //     recipientAddress: recipient.trim());
     isLoading = false;
-    print('Transaction hash: $res');
     Navigator.pop(context);
   }
 
