@@ -7,14 +7,16 @@ import 'package:web3_wallet/services/wallet_address_service.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3_wallet/components/send_tokens.dart';
 
-class WalletPage extends StatefulWidget {
-  const WalletPage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  static const String routeName = "/home";
 
   @override
-  _WalletPageState createState() => _WalletPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _WalletPageState extends State<WalletPage> {
+class _HomePageState extends State<HomePage> {
   final walletAddressService = ETHWalletService();
   final securedStorageWalletRepository = SecureStorageWalletRepository();
   late SepoliaTransactionService transactionService;
@@ -27,10 +29,9 @@ class _WalletPageState extends State<WalletPage> {
   void initState() {
     super.initState();
     transactionService = SepoliaTransactionService();
-
+    _initializeService();
     loadWalletData();
     loadStoredTokens();
-    _initializeService();
   }
 
   Future<void> _initializeService() async {
@@ -72,12 +73,15 @@ class _WalletPageState extends State<WalletPage> {
         EtherAmount balance = await otherTokenService.getBalance(walletAddress);
         String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
 
-        bool tokenExists =
-            tokens.any((token) => token.contractAddress == address);
+        print(
+            "Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+
+        bool tokenExists = tokens.any((token) =>
+            token.name == tokenDetails['name'] &&
+            token.symbol == tokenDetails['symbol']);
 
         if (!tokenExists) {
           Token token = Token(
-              contractAddress: address,
               name: tokenDetails['name'].toString(),
               symbol: tokenDetails['symbol'].toString(),
               balance: balanceStr);
@@ -100,8 +104,8 @@ class _WalletPageState extends State<WalletPage> {
             title: const Text("Import Token"),
             content: TextField(
                 controller: controller,
-                decoration: const InputDecoration(
-                    hintText: "Enter token contract address")),
+                decoration:
+                    InputDecoration(hintText: "Enter token contract address")),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
@@ -250,7 +254,7 @@ class _WalletPageState extends State<WalletPage> {
                             if (index == 0) {
                               return ListTile(
                                 title: const Text("Sepolia ETH"),
-                                subtitle: Text(balance),
+                                subtitle: Text(this.balance),
                               );
                             } else if (index == tokens.length + 1) {
                               return ListTile(

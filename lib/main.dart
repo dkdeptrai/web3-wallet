@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:web3_wallet/blocs/blocs.dart';
+import 'package:web3_wallet/dependencies/app_dependencies.dart';
+import 'package:web3_wallet/pages/pages.dart';
+import 'package:web3_wallet/resources/resources.dart';
+import 'package:web3_wallet/router/router.dart';
 import 'providers/wallet_provider.dart';
-import 'package:web3_wallet/utils/routes.dart';
-import 'package:web3_wallet/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +16,8 @@ void main() async {
 
   WalletProvider walletProvider = WalletProvider();
   await walletProvider.loadPrivateKey();
+
+  await AppDependencies.setUp();
 
   runApp(
     ChangeNotifierProvider<WalletProvider>.value(
@@ -26,11 +32,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: MyRoutes.loginRoute,
-      routes: {
-        MyRoutes.loginRoute: (context) => LoginPage(),
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthenticationCubit>(create: (context) => AuthenticationCubit()),
+        BlocProvider<CreatePasswordCubit>(create: (context) => CreatePasswordCubit()),
+      ],
+      child: MaterialApp(
+        theme: AppThemes().lightTheme,
+        darkTheme: AppThemes().darkTheme,
+        themeMode: ThemeMode.dark,
+        debugShowCheckedModeBanner: false,
+        initialRoute: AuthControlWrapperPage.routeName,
+        onGenerateRoute: (settings) => Routes().onGenerateRoute(settings),
+      ),
     );
   }
 }

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web3_wallet/providers/wallet_provider.dart';
-import 'package:web3_wallet/pages/wallet.dart';
+import 'package:web3_wallet/pages/home/home_page.dart';
 import 'package:web3_wallet/repository/wallet_repository.dart';
 import 'package:web3_wallet/services/wallet_address_service.dart';
 
 class VerifyMnemonicPage extends StatefulWidget {
   final String mnemonic;
 
-  const VerifyMnemonicPage({Key? key, required this.mnemonic})
-      : super(key: key);
+  const VerifyMnemonicPage({Key? key, required this.mnemonic}) : super(key: key);
 
   @override
   _VerifyMnemonicPageState createState() => _VerifyMnemonicPageState();
@@ -37,7 +36,7 @@ class _VerifyMnemonicPageState extends State<VerifyMnemonicPage> {
     void navigateToWalletPage() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const WalletPage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     }
 
