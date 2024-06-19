@@ -7,14 +7,16 @@ import 'package:web3_wallet/services/wallet_address_service.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3_wallet/components/send_tokens.dart';
 
-class WalletPage extends StatefulWidget {
-  const WalletPage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  static const String routeName = "/home";
 
   @override
-  _WalletPageState createState() => _WalletPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _WalletPageState extends State<WalletPage> {
+class _HomePageState extends State<HomePage> {
   final walletAddressService = ETHWalletService();
   final securedStorageWalletRepository = SecureStorageWalletRepository();
   late SepoliaTransactionService transactionService;
@@ -39,17 +41,14 @@ class _WalletPageState extends State<WalletPage> {
   Future<void> loadWalletData() async {
     String? privateKey = await securedStorageWalletRepository.getPrivateKey();
     if (privateKey != null) {
-      EthereumAddress address =
-          await walletAddressService.getPublicKey(privateKey);
+      EthereumAddress address = await walletAddressService.getPublicKey(privateKey);
       setState(() {
         walletAddress = address.hex;
         pvKey = privateKey;
       });
       print("Private Key: $pvKey");
-      EtherAmount latestBalance =
-          await transactionService.getBalance(address.hex);
-      String latestBalanceInEther =
-          latestBalance.getValueInUnit(EtherUnit.ether).toString();
+      EtherAmount latestBalance = await transactionService.getBalance(address.hex);
+      String latestBalanceInEther = latestBalance.getValueInUnit(EtherUnit.ether).toString();
 
       setState(() {
         balance = latestBalanceInEther;
@@ -58,36 +57,27 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   Future<void> loadStoredTokens() async {
-    List<String>? tokenAddresses =
-        await securedStorageWalletRepository.getStoredTokenAddresses();
+    List<String>? tokenAddresses = await securedStorageWalletRepository.getStoredTokenAddresses();
     if (tokenAddresses != null && tokenAddresses.isNotEmpty) {
       for (String address in tokenAddresses) {
         late OtherTokenService otherTokenService = OtherTokenService(address);
         otherTokenService.init();
 
-        Map<String, dynamic> tokenDetails =
-            await otherTokenService.getTokenDetails();
+        Map<String, dynamic> tokenDetails = await otherTokenService.getTokenDetails();
 
         EtherAmount balance = await otherTokenService.getBalance(walletAddress);
         String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
 
-        print(
-            "Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+        print("Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
 
-        bool tokenExists = tokens.any((token) =>
-            token.name == tokenDetails['name'] &&
-            token.symbol == tokenDetails['symbol']);
+        bool tokenExists = tokens.any((token) => token.name == tokenDetails['name'] && token.symbol == tokenDetails['symbol']);
 
         if (!tokenExists) {
-          Token token = Token(
-              name: tokenDetails['name'].toString(),
-              symbol: tokenDetails['symbol'].toString(),
-              balance: balanceStr);
+          Token token = Token(name: tokenDetails['name'].toString(), symbol: tokenDetails['symbol'].toString(), balance: balanceStr);
 
           tokens.add(token);
         } else {
-          print(
-              "Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+          print("Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
         }
       }
     }
@@ -100,10 +90,7 @@ class _WalletPageState extends State<WalletPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Import Token"),
-            content: TextField(
-                controller: controller,
-                decoration:
-                    InputDecoration(hintText: "Enter token contract address")),
+            content: TextField(controller: controller, decoration: InputDecoration(hintText: "Enter token contract address")),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
@@ -115,8 +102,7 @@ class _WalletPageState extends State<WalletPage> {
                     String address = controller.text.trim();
                     if (address.isNotEmpty) {
                       try {
-                        await securedStorageWalletRepository
-                            .saveTokenAddress(address);
+                        await securedStorageWalletRepository.saveTokenAddress(address);
                         Navigator.of(context).pop();
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -198,9 +184,7 @@ class _WalletPageState extends State<WalletPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                SendTokensPage(privateKey: pvKey)),
+                        MaterialPageRoute(builder: (context) => SendTokensPage(privateKey: pvKey)),
                       );
                     },
                     child: const Icon(Icons.send),
@@ -256,9 +240,7 @@ class _WalletPageState extends State<WalletPage> {
                               );
                             } else if (index == tokens.length + 1) {
                               return ListTile(
-                                title: TextButton(
-                                    onPressed: () async => await importToken(),
-                                    child: const Text("Import Token")),
+                                title: TextButton(onPressed: () async => await importToken(), child: const Text("Import Token")),
                               );
                             } else {
                               Token token = tokens[index - 1];
@@ -276,15 +258,13 @@ class _WalletPageState extends State<WalletPage> {
                             leading: const Icon(Icons.logout),
                             title: const Text('Logout'),
                             onTap: () async {
-                              await securedStorageWalletRepository
-                                  .deletePrivateKey();
+                              await securedStorageWalletRepository.deletePrivateKey();
 
                               // ignore: use_build_context_synchronously
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CreateOrImportPage(),
+                                  builder: (context) => const CreateOrImportPage(),
                                 ),
                                 (route) => false,
                               );

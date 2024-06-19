@@ -30,8 +30,7 @@ class SecureStorageWalletRepository implements WalletRepository {
   Future<void> saveTokenAddress(String address) async {
     List<String>? storedAddress = await getStoredTokenAddresses();
     storedAddress?.add(address);
-    await _storage.write(
-        key: _tokenAddressesKey, value: jsonEncode(storedAddress));
+    await _storage.write(key: _tokenAddressesKey, value: jsonEncode(storedAddress));
   }
 
   Future<List<String>?> getStoredTokenAddresses() async {
