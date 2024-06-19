@@ -46,6 +46,7 @@ dependencies:
   flutter_secure_storage: ^4.2.1
   dart_bip32_bip44_noflutter: ^0.2.0
   hd_wallet_kit: ^0.0.2
+  convert: ^3.1.1
 
 dev_dependencies:
   flutter_test:

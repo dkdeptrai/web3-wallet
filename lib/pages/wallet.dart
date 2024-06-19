@@ -27,9 +27,10 @@ class _WalletPageState extends State<WalletPage> {
   void initState() {
     super.initState();
     transactionService = SepoliaTransactionService();
-    _initializeService();
+
     loadWalletData();
     loadStoredTokens();
+    _initializeService();
   }
 
   Future<void> _initializeService() async {
@@ -71,15 +72,12 @@ class _WalletPageState extends State<WalletPage> {
         EtherAmount balance = await otherTokenService.getBalance(walletAddress);
         String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
 
-        print(
-            "Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
-
-        bool tokenExists = tokens.any((token) =>
-            token.name == tokenDetails['name'] &&
-            token.symbol == tokenDetails['symbol']);
+        bool tokenExists =
+            tokens.any((token) => token.contractAddress == address);
 
         if (!tokenExists) {
           Token token = Token(
+              contractAddress: address,
               name: tokenDetails['name'].toString(),
               symbol: tokenDetails['symbol'].toString(),
               balance: balanceStr);
@@ -102,8 +100,8 @@ class _WalletPageState extends State<WalletPage> {
             title: const Text("Import Token"),
             content: TextField(
                 controller: controller,
-                decoration:
-                    InputDecoration(hintText: "Enter token contract address")),
+                decoration: const InputDecoration(
+                    hintText: "Enter token contract address")),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
@@ -252,7 +250,7 @@ class _WalletPageState extends State<WalletPage> {
                             if (index == 0) {
                               return ListTile(
                                 title: const Text("Sepolia ETH"),
-                                subtitle: Text(this.balance),
+                                subtitle: Text(balance),
                               );
                             } else if (index == tokens.length + 1) {
                               return ListTile(

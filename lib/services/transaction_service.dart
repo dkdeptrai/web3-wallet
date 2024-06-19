@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:math';
+import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,11 +10,15 @@ import 'package:web3dart/web3dart.dart';
 abstract class TransactionService {
   Future<void> init();
   Future<EtherAmount> getBalance(String address);
-  Future<TransactionReceipt> sendTransaction({
+  Future<void> sendTransaction({
     required String privateKey,
     required String recipientAddress,
     required String amountToSend,
   });
+}
+
+String hexEncode(Uint8List input) {
+  return hex.encode(input).padLeft((input.length + 1) * 2, "0");
 }
 
 class SepoliaTransactionService extends TransactionService {
@@ -34,7 +40,7 @@ class SepoliaTransactionService extends TransactionService {
   }
 
   @override
-  Future<TransactionReceipt> sendTransaction({
+  Future<void> sendTransaction({
     required String privateKey,
     required String recipientAddress,
     required String amountToSend,
@@ -51,20 +57,24 @@ class SepoliaTransactionService extends TransactionService {
         to: EthereumAddress.fromHex(recipientAddress),
         value: EtherAmount.inWei(amountInWei),
         gasPrice: gasPrice,
-        maxGas: 20000000,
+        maxGas: 5000000,
       );
 
       final signedTx = await _client.signTransaction(credentials, transaction,
           chainId: 11155111);
-      final txHash = await _client.sendRawTransaction(signedTx);
-      TransactionReceipt? receipt;
-      while (receipt == null) {
-        await Future.delayed(
-            const Duration(seconds: 5)); // Poll every 5 seconds
-        receipt = await _client.getTransactionReceipt(txHash);
-      }
+      final signedTxBytes = signedTx; // signedTx is already a Uint8List
+      final signedTxHex = hexEncode(
+          signedTxBytes); // Convert the byte array to a hexadecimal string
+      print('Signed transaction: $signedTxHex');
+      // final txHash = await _client.sendRawTransaction(signedTx);
+      // TransactionReceipt? receipt;
+      // while (receipt == null) {
+      //   await Future.delayed(
+      //       const Duration(seconds: 5)); // Poll every 5 seconds
+      //   receipt = await _client.getTransactionReceipt(txHash);
+      // }
 
-      return receipt;
+      // return receipt;
     } catch (e) {
       print('Transaction failed: $e');
       throw ('Transaction failed: $e');
@@ -73,12 +83,14 @@ class SepoliaTransactionService extends TransactionService {
 }
 
 class OtherTokenService extends TransactionService {
+  late final String _tokenAbi;
   late final String _contractAddress;
   final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
   late Web3Client _client;
 
   OtherTokenService(String contractAddress) {
     _contractAddress = contractAddress;
+    // TODO: Load the ABI from the Local Storage
   }
 
   @override
@@ -107,15 +119,21 @@ class OtherTokenService extends TransactionService {
   }
 
   @override
-  Future<TransactionReceipt> sendTransaction(
+  Future<void> sendTransaction(
       {required String privateKey,
       required String recipientAddress,
       required String amountToSend}) async {
     try {
       final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
 
+      final gasPrice = await _client.getGasPrice();
+
+      // TODO: Repace with loading abi from local storage
       final abiCode =
           await rootBundle.loadString('assets/abi/erc20tokenabi.json');
+
+      final credentials = EthPrivateKey.fromHex(privateKey);
+
       final contract = DeployedContract(
           ContractAbi.fromJson(abiCode, 'ERC20Token'),
           EthereumAddress.fromHex(_contractAddress));
@@ -124,23 +142,53 @@ class OtherTokenService extends TransactionService {
       final data = transferFunction
           .encodeCall([EthereumAddress.fromHex(recipientAddress), amountInWei]);
 
-      final credentials = EthPrivateKey.fromHex(privateKey);
-      final transaction = Transaction(
-          from: await credentials.address,
-          to: contract.address,
-          value: EtherAmount.zero(),
-          data: data);
+      final transaction = Transaction.callContract(
+          contract: contract,
+          function: transferFunction,
+          parameters: [EthereumAddress.fromHex(recipientAddress), amountInWei],
+          gasPrice: gasPrice,
+          maxGas: 500000,
+          nonce: await _client.getTransactionCount(credentials.address));
 
-      final signedTx = await _client.signTransaction(credentials, transaction);
-      final txHash = await _client.sendRawTransaction(signedTx);
+      final signedTx = await _client.signTransaction(credentials, transaction,
+          chainId: 11155111);
+      final signedTxHex = hexEncode(signedTx);
+      print('Signed transaction: $signedTxHex');
 
-      TransactionReceipt? receipt;
-      while (receipt == null) {
-        await Future.delayed(const Duration(seconds: 5));
-        receipt = await _client.getTransactionReceipt(txHash);
-      }
+      // This works
+      // final txBlockHash = await _client.sendTransaction(
+      //     credentials,
+      //     Transaction.callContract(
+      //         contract: contract,
+      //         function: contract.function('transfer'),
+      //         parameters: [
+      //           EthereumAddress.fromHex(recipientAddress),
+      //           amountInWei
+      //         ]),
+      //     chainId: 11155111);
 
-      return receipt;
+      // final signedTxHex = hexEncode(txBlockHash);
+      // print("Signed Tx: $signedTxHex");
+
+      // final transaction = Transaction(
+      //     from: await credentials.address,
+      //     to: contract.address,
+      //     value: EtherAmount.zero(),
+      //     gasPrice: gasPrice,
+      //     maxGas: 5000000,
+      //     data: data);
+
+      // final signedTx = await _client.signTransaction(credentials, transaction);
+      // print("Signec Tx: $signedTxHex");
+      // final txHash = await _client.sendRawTransaction(signedTx);
+
+      // TransactionReceipt? receipt;
+      // while (receipt == null) {
+      //   await Future.delayed(const Duration(seconds: 5));
+      //   receipt = await _client.getTransactionReceipt(txHash);
+      // }
+
+      // return receipt;
     } catch (e) {
       print('Transaction failed: $e');
       throw ('Transaction failed: $e');
