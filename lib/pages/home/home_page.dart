@@ -84,7 +84,8 @@ class _HomePageState extends State<HomePage> {
           Token token = Token(
               name: tokenDetails['name'].toString(),
               symbol: tokenDetails['symbol'].toString(),
-              balance: balanceStr);
+              balance: balanceStr,
+              contractAddress: address);
 
           tokens.add(token);
         } else {
