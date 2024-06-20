@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:web3_wallet/model/token_model.dart';
 import 'package:web3_wallet/pages/create_or_import.dart';
+import 'package:web3_wallet/pages/send_tokens.dart';
 import 'package:web3_wallet/repository/wallet_repository.dart';
-import 'package:web3_wallet/services/transaction_service.dart';
-import 'package:web3_wallet/services/wallet_address_service.dart';
+import 'package:web3_wallet/services/services.dart';
 import 'package:web3dart/web3dart.dart';
-import 'package:web3_wallet/components/send_tokens.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

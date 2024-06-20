@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:web3_wallet/services/transaction_service.dart';
+import 'package:web3_wallet/services/services.dart';
 
 class SendTokensPage extends StatefulWidget {
   final String privateKey;
@@ -42,9 +42,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
     }
     isLoading = true;
     final res = await sepoliaTransactionService.sendTransaction(
-        amountToSend: amount.trim(),
-        privateKey: widget.privateKey,
-        recipientAddress: recipient.trim());
+        amountToSend: amount.trim(), privateKey: widget.privateKey, recipientAddress: recipient.trim());
     isLoading = false;
     print('Transaction hash: $res');
     Navigator.pop(context);
@@ -74,8 +72,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
               decoration: const InputDecoration(
                 labelText: 'Amount',
               ),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
             const SizedBox(height: 16.0),
             FutureBuilder(
