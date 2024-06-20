@@ -29,10 +29,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     transactionService = SepoliaTransactionService();
-
+    _initializeService();
     loadWalletData();
     loadStoredTokens();
-    _initializeService();
   }
 
   Future<void> _initializeService() async {
@@ -85,7 +84,8 @@ class _HomePageState extends State<HomePage> {
           Token token = Token(
               name: tokenDetails['name'].toString(),
               symbol: tokenDetails['symbol'].toString(),
-              balance: balanceStr);
+              balance: balanceStr,
+              contractAddress: address);
 
           tokens.add(token);
         } else {
@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                             if (index == 0) {
                               return ListTile(
                                 title: const Text("Sepolia ETH"),
-                                subtitle: Text(balance),
+                                subtitle: Text(this.balance),
                               );
                             } else if (index == tokens.length + 1) {
                               return ListTile(
