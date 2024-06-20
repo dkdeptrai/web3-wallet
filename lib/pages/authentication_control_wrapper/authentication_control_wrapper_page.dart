@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web3_wallet/blocs/blocs.dart';
-import 'package:web3_wallet/common_widgets/common_widgets.dart';
+import 'package:web3_wallet/pages/authentication_control_wrapper/widgets/widgets.dart';
 import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/resources.dart';
 import 'package:web3_wallet/utils/password_util.dart';
@@ -21,7 +21,6 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final appColors = Theme.of(context).extension<AppColors>()!;
       final hasPassword = await PasswordUtil.hasPassword();
       if (!hasPassword) {
         if (!mounted) {
@@ -37,29 +36,8 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
           context: context,
           barrierDismissible: false,
           builder: (context) {
-            return AlertDialog(
-              backgroundColor: appColors.bgScreen,
-              title: Text(
-                "Enter password",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.softPurple),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomTextFormField.primary(
-                    controller: _passwordController,
-                    context: context,
-                    hintText: "Password",
-                    obscureText: true,
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: _authenticate,
-                  child: const Text("Verify"),
-                )
-              ],
+            return EnterPasswordDialog(
+              passwordController: _passwordController,
             );
           });
     });
@@ -82,10 +60,5 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
         },
       ),
     );
-  }
-
-  Future<void> _authenticate() async {
-    final cubit = context.read<AuthenticationCubit>();
-    cubit.authenticate(password: _passwordController.text);
   }
 }
