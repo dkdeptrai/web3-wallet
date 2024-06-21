@@ -34,21 +34,23 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  # Blockchain libs
   web3dart: ^2.7.3
-  flutter_dotenv: ^5.1.0
   bip39: ^1.0.6
   hex: ^0.2.0
   ed25519_hd_key: ^2.2.1
+  hd_wallet_kit: ^0.0.2
+  flutter_dotenv: ^5.1.0
+  ethereum: ^6.0.1
   provider: ^6.1.2
   shared_preferences: ^2.2.2
   http: ^1.2.0
-  ethereum: ^6.0.1
   flutter_secure_storage: ^4.2.1
   dart_bip32_bip44_noflutter: ^0.2.0
-  hd_wallet_kit: ^0.0.2
   get_it: ^7.6.7
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +76,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/icons/
     - assets/fonts/
     - ./.env
     - assets/abi/erc20tokenabi.json
