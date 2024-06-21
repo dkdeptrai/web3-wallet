@@ -50,7 +50,7 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
       body: BlocConsumer<AuthenticationCubit, AuthenticationState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            Navigator.pushNamed(context, HomePage.routeName);
+            Navigator.pushNamed(context, MainPage.routeName);
           }
         },
         builder: (context, state) {
