@@ -24,7 +24,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
   }
 
   Future<void> _initializeService() async {
-    await sepoliaTransactionService.init();
+    sepoliaTransactionService.init();
   }
 
   @override

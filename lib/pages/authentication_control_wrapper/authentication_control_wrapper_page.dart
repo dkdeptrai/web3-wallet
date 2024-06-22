@@ -16,7 +16,7 @@ class AuthControlWrapperPage extends StatefulWidget {
 }
 
 class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController(text: "Hello@123");
 
   @override
   void initState() {

@@ -109,10 +109,7 @@ class _Step3ContentState extends State<Step3Content> {
               return CustomButton.primaryButton(
                 context: context,
                 text: "Next",
-                onTap: () {
-                  Navigator.pushNamed(context, CreatePasswordSuccess.routeName);
-                  // context.read<CreatePasswordCubit>().nextStep();
-                },
+                onTap: () => _onNext(state.mnemonicWords),
               );
             } else {
               return Column(
@@ -144,5 +141,11 @@ class _Step3ContentState extends State<Step3Content> {
   void _onTryAgain() {
     context.read<CreatePasswordCubit>().resetSelectedWords();
     // Navigator.pushNamed(context, CreatePasswordSuccess.routeName);
+  }
+
+  void _onNext(List<String> mnemonicWords) async {
+    await context.read<WalletCubit>().saveWalletInfo(mnemonicWords);
+    if (!mounted) return;
+    Navigator.pushNamed(context, CreatePasswordSuccess.routeName);
   }
 }

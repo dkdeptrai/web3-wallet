@@ -36,6 +36,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthenticationCubit>(create: (context) => AuthenticationCubit()),
         BlocProvider<CreatePasswordCubit>(create: (context) => CreatePasswordCubit()),
+        BlocProvider<WalletCubit>(create: (context) => WalletCubit()),
+        BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
+        BlocProvider<TokensCubit>(create: (context) => TokensCubit()),
       ],
       child: MaterialApp(
         theme: AppThemes().lightTheme,

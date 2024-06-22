@@ -51,6 +51,8 @@ dependencies:
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
   flutter_svg: ^2.0.10+1
+  web_socket_channel: ^2.4.0
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:

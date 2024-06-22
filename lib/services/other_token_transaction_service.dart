@@ -2,31 +2,38 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
+import 'package:web3_wallet/exceptions/wallet_not_found.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3dart/web3dart.dart';
 
 class OtherTokenService extends TransactionService {
-  late final String _contractAddress;
+  String? _contractAddress;
   final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
-  late Web3Client _client;
+  Web3Client? _client;
 
-  OtherTokenService(String contractAddress) {
+  OtherTokenService(String? contractAddress) {
     _contractAddress = contractAddress;
+    init();
   }
 
   @override
   Future<void> init() async {
-    _client = await Web3Client(_apiUrl, Client());
+    if (_client != null) return;
+    _client = Web3Client(_apiUrl, Client());
   }
 
   @override
   Future<EtherAmount> getBalance(String address) async {
+    if (_contractAddress == null) throw WalletNotFoundException("Contract address is not set");
+
     final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
-    final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress));
+    final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress!));
     final params = [EthereumAddress.fromHex(address)];
     final balanceFunction = contract.function('balanceOf');
 
-    final balance = await _client.call(contract: contract, function: balanceFunction, params: params);
+    if (_client == null) throw ('Web3Client is not initialized');
+
+    final balance = await _client!.call(contract: contract, function: balanceFunction, params: params);
 
     String balanceStr = balance.first.toString();
 
@@ -37,11 +44,13 @@ class OtherTokenService extends TransactionService {
 
   @override
   Future<TransactionReceipt> sendTransaction({required String privateKey, required String recipientAddress, required String amountToSend}) async {
+    if (_contractAddress == null) throw WalletNotFoundException("Contract address is not set");
+
     try {
       final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
 
       final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
-      final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress));
+      final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress!));
 
       final transferFunction = contract.function('transfer');
       final data = transferFunction.encodeCall([EthereumAddress.fromHex(recipientAddress), amountInWei]);
@@ -49,13 +58,15 @@ class OtherTokenService extends TransactionService {
       final credentials = EthPrivateKey.fromHex(privateKey);
       final transaction = Transaction(from: await credentials.address, to: contract.address, value: EtherAmount.zero(), data: data);
 
-      final signedTx = await _client.signTransaction(credentials, transaction);
-      final txHash = await _client.sendRawTransaction(signedTx);
+      if (_client == null) throw ('Web3Client is not initialized');
+
+      final signedTx = await _client!.signTransaction(credentials, transaction);
+      final txHash = await _client!.sendRawTransaction(signedTx);
 
       TransactionReceipt? receipt;
       while (receipt == null) {
         await Future.delayed(const Duration(seconds: 5));
-        receipt = await _client.getTransactionReceipt(txHash);
+        receipt = await _client!.getTransactionReceipt(txHash);
       }
 
       return receipt;
@@ -66,16 +77,20 @@ class OtherTokenService extends TransactionService {
   }
 
   Future<Map<String, dynamic>> getTokenDetails() async {
+    if (_contractAddress == null) throw WalletNotFoundException("Contract address is not set");
+
     try {
       final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
-      final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress));
+      final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress!));
 
       final nameFunction = contract.function('name');
       final symbolFunction = contract.function('symbol');
 
-      final name = await _client.call(contract: contract, function: nameFunction, params: []);
+      if (_client == null) throw ('Web3Client is not initialized');
 
-      final symbol = await _client.call(contract: contract, function: symbolFunction, params: []);
+      final name = await _client!.call(contract: contract, function: nameFunction, params: []);
+
+      final symbol = await _client!.call(contract: contract, function: symbolFunction, params: []);
 
       return {
         'name': name,
@@ -85,5 +100,15 @@ class OtherTokenService extends TransactionService {
       print('Transaction failed: $e');
       throw ('Transaction failed: $e');
     }
+  }
+
+  @override
+  bool isInitialized() {
+    return _client != null;
+  }
+
+  @override
+  void setContractAddress(String address) {
+    _contractAddress = address;
   }
 }

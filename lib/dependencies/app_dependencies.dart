@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:web3_wallet/dependencies/page_dependencies.dart';
+import 'package:web3_wallet/dependencies/service_dependencies.dart';
 
 class AppDependencies {
   static GetIt get injector => GetIt.I;
@@ -8,5 +9,6 @@ class AppDependencies {
     injector.registerLazySingleton<FlutterSecureStorage>(() => const FlutterSecureStorage());
 
     await PageDependencies.setup(injector);
+    await ServiceDependencies.setUp(injector);
   }
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:web3_wallet/providers/wallet_provider.dart';
+import 'package:get_it/get_it.dart';
 import 'package:web3_wallet/pages/home/home_page.dart';
-import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3_wallet/services/wallet_address_service.dart';
 
 class VerifyMnemonicPage extends StatefulWidget {
@@ -19,7 +18,8 @@ class _VerifyMnemonicPageState extends State<VerifyMnemonicPage> {
   String verificationText = '';
   String privateKey = '';
   final ethWalletService = ETHWalletService();
-  final securedStorageWalletRepository = SecureStorageWalletRepository();
+  final securedStorageWalletRepository = GetIt.I<WalletService>();
+
   void verifyMnemonic() {
     if (verificationText.trim() == widget.mnemonic.trim()) {
       ethWalletService.getPrivateKeyFromMnemonic(widget.mnemonic).then((value) {

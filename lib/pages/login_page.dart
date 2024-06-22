@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:web3_wallet/providers/wallet_provider.dart';
-import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:get_it/get_it.dart';
+import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'home/home_page.dart';
 import 'create_or_import.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
-  final securedStorageWalletRepository = SecureStorageWalletRepository();
+  final securedStorageWalletRepository = GetIt.I<WalletService>();
 
   @override
   Widget build(BuildContext context) {

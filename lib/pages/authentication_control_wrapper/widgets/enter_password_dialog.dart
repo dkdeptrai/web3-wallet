@@ -27,51 +27,48 @@ class _EnterPasswordDialogState extends State<EnterPasswordDialog> {
 
     return Form(
       key: _formKey,
-      child: Stack(
-        children: [
-          Image.asset(AppAssets.imgBitcoin3),
-          AlertDialog(
-            backgroundColor: appColors.bgCard1,
-            content: SizedBox(
-              width: size.width - 2 * AppDimensions.defaultHorizontalPadding,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Enter password",
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(color: appColors.softPurple),
-                  ),
-                  const SizedBox(height: 30),
-                  BlocBuilder<AuthenticationCubit, AuthenticationState>(
-                    builder: (context, state) {
-                      return CustomTextFormField.primary(
-                        controller: widget.passwordController,
-                        context: context,
-                        hintText: "Password",
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please enter your password";
-                          }
-                          if (state is WrongPassword) {
-                            return "Wrong password";
-                          }
-                          return null;
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  CustomButton.secondaryButton(
-                    context: context,
-                    onTap: () => _authenticate(context),
-                    text: "Authenticate",
-                  ),
-                ],
+      child: AlertDialog(
+        backgroundColor: appColors.bgCard1,
+        content: SizedBox(
+          width: size.width - 2 * AppDimensions.defaultHorizontalPadding,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(AppAssets.imgRobot3WithBg, height: 150),
+              const SizedBox(height: 10),
+              Text(
+                "Enter password",
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(color: appColors.softPurple),
               ),
-            ),
+              const SizedBox(height: 30),
+              BlocBuilder<AuthenticationCubit, AuthenticationState>(
+                builder: (context, state) {
+                  return CustomTextFormField.primary(
+                    controller: widget.passwordController,
+                    context: context,
+                    hintText: "Password",
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please enter your password";
+                      }
+                      if (state is WrongPassword) {
+                        return "Wrong password";
+                      }
+                      return null;
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 30),
+              CustomButton.secondaryButton(
+                context: context,
+                onTap: () => _authenticate(context),
+                text: "Authenticate",
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
