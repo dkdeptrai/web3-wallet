@@ -1,14 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:web3_wallet/blocs/blocs.dart';
 import 'package:web3_wallet/constants/dimensions.dart';
 import 'package:web3_wallet/model/token_model.dart';
+import 'package:web3_wallet/pages/home/widgets/trending_tab.dart';
 import 'package:web3_wallet/pages/home/widgets/widgets.dart';
-import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3_wallet/resources/resources.dart';
 import 'package:web3_wallet/services/services.dart';
-import 'package:web3dart/web3dart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,117 +23,57 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final walletAddressService = ETHWalletService();
-  final securedStorageWalletRepository = SecureStorageWalletRepository();
-  late SepoliaTransactionService transactionService;
+  final securedStorageWalletRepository = GetIt.I<WalletService>();
+  final MarketService marketService = GetIt.I<MarketService>();
+  final SepoliaTransactionService transactionService = GetIt.I<SepoliaTransactionService>();
+  final TokenService tokenService = GetIt.I<TokenService>();
+
   String walletAddress = '';
   String balance = '';
   String pvKey = '';
   List<Token> tokens = [];
 
+  final PageController _pageController = PageController();
+
   @override
   void initState() {
     super.initState();
-    transactionService = SepoliaTransactionService();
-    _initializeService();
-    loadWalletData();
-    loadStoredTokens();
+    context.read<WalletCubit>().loadWallet();
+    // loadStoredTokens();
   }
 
-  Future<void> _initializeService() async {
-    await transactionService.init();
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
-  Future<void> loadWalletData() async {
-    String? privateKey = await securedStorageWalletRepository.getPrivateKey();
-    if (privateKey != null) {
-      EthereumAddress address = await walletAddressService.getPublicKey(privateKey);
-      setState(() {
-        walletAddress = address.hex;
-        pvKey = privateKey;
-      });
-      print("Private Key: $pvKey");
-      EtherAmount latestBalance = await transactionService.getBalance(address.hex);
-      String latestBalanceInEther = latestBalance.getValueInUnit(EtherUnit.ether).toString();
+  // Future<void> loadStoredTokens() async {
+  //   List<String>? tokenAddresses = await securedStorageWalletRepository.getStoredTokenAddresses();
+  //   if (tokenAddresses != null && tokenAddresses.isNotEmpty) {
+  //     for (String address in tokenAddresses) {
+  //       late OtherTokenService otherTokenService = OtherTokenService(address);
+  //       otherTokenService.init();
 
-      setState(() {
-        balance = latestBalanceInEther;
-      });
-    }
-  }
+  //       Map<String, dynamic> tokenDetails = await otherTokenService.getTokenDetails();
 
-  Future<void> loadStoredTokens() async {
-    List<String>? tokenAddresses = await securedStorageWalletRepository.getStoredTokenAddresses();
-    if (tokenAddresses != null && tokenAddresses.isNotEmpty) {
-      for (String address in tokenAddresses) {
-        late OtherTokenService otherTokenService = OtherTokenService(address);
-        otherTokenService.init();
+  //       EtherAmount balance = await otherTokenService.getBalance(walletAddress);
+  //       String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
 
-        Map<String, dynamic> tokenDetails = await otherTokenService.getTokenDetails();
+  //       print("Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
 
-        EtherAmount balance = await otherTokenService.getBalance(walletAddress);
-        String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
+  //       bool tokenExists = tokens.any((token) => token.name == tokenDetails['name'] && token.symbol == tokenDetails['symbol']);
 
-        print("Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+  //       if (!tokenExists) {
+  //         Token token = Token(name: tokenDetails['name'].toString(), symbol: tokenDetails['symbol'].toString(), balance: balanceStr);
 
-        bool tokenExists = tokens.any((token) => token.name == tokenDetails['name'] && token.symbol == tokenDetails['symbol']);
-
-        if (!tokenExists) {
-          Token token = Token(name: tokenDetails['name'].toString(), symbol: tokenDetails['symbol'].toString(), balance: balanceStr);
-
-          tokens.add(token);
-        } else {
-          print("Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
-        }
-      }
-    }
-  }
-
-  Future<void> importToken() async {
-    final TextEditingController controller = TextEditingController();
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Import Token"),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(hintText: "Enter token contract address"),
-          ),
-          actions: <Widget>[
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("Cancel")),
-            TextButton(
-                onPressed: () async {
-                  String address = controller.text.trim();
-                  if (address.isNotEmpty) {
-                    try {
-                      await securedStorageWalletRepository.saveTokenAddress(address);
-                      Navigator.of(context).pop();
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Failed to import token: $e'),
-                        ),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please enter a valid address'),
-                      ),
-                    );
-                  }
-                },
-                child: const Text("Import"))
-          ],
-        );
-      },
-    );
-  }
+  //         tokens.add(token);
+  //       } else {
+  //         print("Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -208,11 +151,21 @@ class _HomePageState extends State<HomePage> {
                         "Total balance",
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "\$ 32.00",
-                        style: Theme.of(context).textTheme.titleLarge,
+                      BlocBuilder<WalletCubit, WalletState>(
+                        builder: (context, state) {
+                          if (state is WalletLoaded) {
+                            return Text(
+                              "\$ ${state.balance}",
+                              style: Theme.of(context).textTheme.titleLarge,
+                            );
+                          }
+                          return Text(
+                            "...",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          );
+                        },
                       ),
+                      const SizedBox(height: 8),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -278,36 +231,64 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 25),
                 Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.only(
-                      left: AppDimensions.defaultHorizontalPadding,
-                      right: AppDimensions.defaultHorizontalPadding,
-                      top: 30,
-                    ),
-                    decoration: BoxDecoration(
-                      color: appColors.bgCard2,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Trending",
-                          style: Theme.of(context).textTheme.displayMedium,
+                  child: BlocConsumer<HomeCubit, HomeState>(
+                    listener: (context, state) {
+                      _pageController.jumpToPage(state.tabIndex);
+                    },
+                    builder: (context, state) {
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(
+                          left: AppDimensions.defaultHorizontalPadding,
+                          right: AppDimensions.defaultHorizontalPadding,
+                          top: 10,
                         ),
-                        const SizedBox(height: 20),
-                        Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: 20,
-                            itemBuilder: (context, index) {
-                              return TrendingItemWidget();
-                            },
-                          ),
+                        decoration: BoxDecoration(
+                          color: appColors.bgCard2,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
                         ),
-                      ],
-                    ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TabSelection(
+                                    text: "Trending",
+                                    isSelected: state.tabIndex == 0,
+                                    onTap: () => _onChangeTab(0),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TabSelection(
+                                    text: "Tokens",
+                                    isSelected: state.tabIndex == 1,
+                                    onTap: () => _onChangeTab(1),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            StreamBuilder(
+                                stream: marketService.getStream(),
+                                builder: (context, snapshot) {
+                                  print("Snapshot: $snapshot");
+                                  return Text(snapshot.hasData ? snapshot.data.toString() : "No data");
+                                }),
+                            Expanded(
+                              child: PageView(
+                                controller: _pageController,
+                                onPageChanged: (index) => _onChangeTab(index),
+                                children: [
+                                  TrendingTab(),
+                                  TokensTab(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 )
               ],
@@ -368,9 +349,7 @@ class _HomePageState extends State<HomePage> {
       //               onPressed: () {
       //                 Navigator.push(
       //                   context,
-      //                   MaterialPageRoute(
-      //                       builder: (context) =>
-      //                           SendTokensPage(privateKey: pvKey)),
+      //                   MaterialPageRoute(builder: (context) => SendTokensPage(privateKey: pvKey)),
       //                 );
       //               },
       //               child: const Icon(Icons.send),
@@ -387,7 +366,7 @@ class _HomePageState extends State<HomePage> {
       //                 tokens.clear();
       //                 walletAddress = '';
       //                 balance = '';
-      //                 await loadWalletData();
+      //                 // await loadWalletData();
       //                 await loadStoredTokens();
       //                 setState(() {});
       //               },
@@ -426,9 +405,7 @@ class _HomePageState extends State<HomePage> {
       //                         );
       //                       } else if (index == tokens.length + 1) {
       //                         return ListTile(
-      //                           title: TextButton(
-      //                               onPressed: () async => await importToken(),
-      //                               child: const Text("Import Token")),
+      //                           title: TextButton(onPressed: () async => await importToken(), child: const Text("Import Token")),
       //                         );
       //                       } else {
       //                         Token token = tokens[index - 1];
@@ -446,15 +423,13 @@ class _HomePageState extends State<HomePage> {
       //                       leading: const Icon(Icons.logout),
       //                       title: const Text('Logout'),
       //                       onTap: () async {
-      //                         await securedStorageWalletRepository
-      //                             .deletePrivateKey();
+      //                         await securedStorageWalletRepository.deletePrivateKey();
 
       //                         // ignore: use_build_context_synchronously
       //                         Navigator.pushAndRemoveUntil(
       //                           context,
       //                           MaterialPageRoute(
-      //                             builder: (context) =>
-      //                                 const CreateOrImportPage(),
+      //                             builder: (context) => const CreateOrImportPage(),
       //                           ),
       //                           (route) => false,
       //                         );
@@ -471,5 +446,9 @@ class _HomePageState extends State<HomePage> {
       //   ],
       // ),
     );
+  }
+
+  void _onChangeTab(int newIndex) {
+    context.read<HomeCubit>().changeTab(newIndex);
   }
 }

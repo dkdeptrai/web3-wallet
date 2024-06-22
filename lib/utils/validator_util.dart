@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:web3dart/crypto.dart';
+
 class ValidatorUtil {
   static bool isEmail(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
@@ -21,5 +25,20 @@ class ValidatorUtil {
 
   static bool isAddress(String address) {
     return address.length >= 3;
+  }
+
+  static bool isValidTokenAddress(String address) {
+    address = address.replaceFirst('0x', '');
+    var addressHash = keccak256(utf8.encode(address.toLowerCase()));
+
+    for (var i = 0; i < 40; i++) {
+      String hashChar = addressHash[i >> 1].toRadixString(16).padLeft(2, '0')[i & 1];
+      int hashValue = int.parse(hashChar, radix: 16);
+      if ((hashValue > 7 && address[i].toUpperCase() != address[i]) || (hashValue <= 7 && address[i].toLowerCase() != address[i])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

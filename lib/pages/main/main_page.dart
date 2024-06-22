@@ -38,9 +38,6 @@ class _MainPageState extends State<MainPage> {
         index: _currentIndex,
         children: [
           HomePage(),
-          HomePage(),
-          HomePage(),
-          HomePage(),
         ],
       ),
     );
