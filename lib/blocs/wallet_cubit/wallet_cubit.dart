@@ -26,6 +26,7 @@ class WalletCubit extends Cubit<WalletState> {
       print("Private key: $privateKey");
       if (privateKey != null) {
         EthereumAddress address = await walletAddressService.getPublicKey(privateKey);
+        print("Address: ${address.hex}");
         String walletAddress = address.hex;
         String pvKey = privateKey;
         EtherAmount latestBalance = await transactionService.getBalance(address.hex);

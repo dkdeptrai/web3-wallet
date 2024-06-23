@@ -40,7 +40,7 @@ class _TokensTabState extends State<TokensTab> {
           BlocBuilder<TokensCubit, TokensState>(
             builder: (context, state) {
               if (state is TokensLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CustomLoadingWidget());
               } else if (state is TokensLoaded) {
                 return ListView.builder(
                   shrinkWrap: true,

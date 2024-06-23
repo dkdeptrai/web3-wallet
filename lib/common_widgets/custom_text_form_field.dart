@@ -11,6 +11,9 @@ class CustomTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool obscureText;
   final TextStyle? style;
+  final Widget? suffix;
+  final Widget? prefix;
+  final Widget? prefixIcon;
 
   const CustomTextFormField._({
     this.controller,
@@ -21,6 +24,9 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.obscureText = false,
     this.style,
+    this.prefix,
+    this.prefixIcon,
+    this.suffix,
   });
 
   factory CustomTextFormField.primary({
@@ -33,6 +39,9 @@ class CustomTextFormField extends StatelessWidget {
     String? Function(String?)? validator,
     bool obscureText = false,
     TextStyle? style,
+    Widget? prefix,
+    Widget? prefixIcon,
+    Widget? suffix,
   }) {
     final appColors = Theme.of(context).extension<AppColors>()!;
 
@@ -40,11 +49,14 @@ class CustomTextFormField extends StatelessWidget {
       controller: controller,
       hintText: hintText,
       backgroundColor: backgroundColor ?? appColors.bgCard1,
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       hintTextColor: hintTextColor ?? appColors.subTitle,
       validator: validator,
       obscureText: obscureText,
       style: style ?? Theme.of(context).textTheme.headlineSmall,
+      prefix: prefix,
+      prefixIcon: prefixIcon,
+      suffix: suffix,
     );
   }
 
@@ -63,6 +75,10 @@ class CustomTextFormField extends StatelessWidget {
         contentPadding: padding,
         fillColor: backgroundColor,
         filled: true,
+        prefix: prefix,
+        prefixIcon: prefixIcon,
+        suffix: suffix,
+        prefixIconConstraints: const BoxConstraints(minWidth: 50),
       ),
       style: style,
       cursorHeight: 25,

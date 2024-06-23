@@ -9,7 +9,9 @@ class SepoliaTransactionService extends TransactionService {
   final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
   Web3Client? _client;
 
-  SepoliaTransactionService();
+  SepoliaTransactionService() {
+    init();
+  }
 
   @override
   void init() {
@@ -28,10 +30,10 @@ class SepoliaTransactionService extends TransactionService {
   Future<TransactionReceipt> sendTransaction({
     required String privateKey,
     required String recipientAddress,
-    required String amountToSend,
+    required double amountToSend,
   }) async {
     try {
-      final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
+      final amountInWei = BigInt.from(amountToSend * pow(10, 18));
 
       final Credentials credentials = EthPrivateKey.fromHex(privateKey);
 
@@ -40,7 +42,7 @@ class SepoliaTransactionService extends TransactionService {
       final gasPrice = await _client!.getGasPrice();
 
       final Transaction transaction = Transaction(
-        from: await credentials.address,
+        from: credentials.address,
         to: EthereumAddress.fromHex(recipientAddress),
         value: EtherAmount.inWei(amountInWei),
         gasPrice: gasPrice,
@@ -54,7 +56,7 @@ class SepoliaTransactionService extends TransactionService {
         await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
         receipt = await _client!.getTransactionReceipt(txHash);
       }
-
+      print("Send success: $receipt");
       return receipt;
     } catch (e) {
       print('Transaction failed: $e');

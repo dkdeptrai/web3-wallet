@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<WalletCubit>(create: (context) => WalletCubit()),
         BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
         BlocProvider<TokensCubit>(create: (context) => TokensCubit()),
+        BlocProvider<SendTokensCubit>(create: (context) => SendTokensCubit()),
       ],
       child: MaterialApp(
         theme: AppThemes().lightTheme,

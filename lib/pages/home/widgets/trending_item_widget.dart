@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
+import 'package:web3_wallet/extensions/extensions.dart';
 import 'package:web3_wallet/resources/resources.dart';
 
 class TrendingItemWidget extends StatelessWidget {
-  const TrendingItemWidget({super.key});
+  final String name;
+  final String symbol;
+  final String code;
+  final String imagePath;
+  final double rate;
+  final hourDelta;
+  final String colorCode;
+
+  const TrendingItemWidget({
+    super.key,
+    required this.name,
+    required this.code,
+    required this.symbol,
+    required this.imagePath,
+    required this.rate,
+    this.hourDelta,
+    required this.colorCode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -10,17 +29,22 @@ class TrendingItemWidget extends StatelessWidget {
 
     return Row(
       children: [
-        Image.asset(AppAssets.imgBitcoin3),
+        CircleAvatar(
+          backgroundColor: Color(int.parse("0xFF${colorCode.replaceAll("#", "")}")).withOpacity(0.2),
+          child: Image.network(imagePath, width: 30, height: 30),
+          radius: 25,
+        ),
         const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Bitcoin",
+              name,
               style: Theme.of(context).textTheme.displaySmall,
             ),
+            const SizedBox(height: 5),
             Text(
-              "BTC",
+              code,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
             ),
           ],
@@ -30,12 +54,25 @@ class TrendingItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "\$213",
+              rate.toCurrencyFormat,
               style: Theme.of(context).textTheme.displaySmall,
             ),
-            Text(
-              "BTC",
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
+            const SizedBox(height: 5),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomSvgImage(
+                  imagePath: hourDelta > 0 ? AppAssets.icChevronUp : AppAssets.icChevronDown,
+                  width: 16,
+                  height: 16,
+                  color: hourDelta > 0 ? appColors.green : appColors.red,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  "\$$hourDelta",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
+                ),
+              ],
             ),
           ],
         ),

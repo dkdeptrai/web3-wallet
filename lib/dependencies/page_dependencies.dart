@@ -10,5 +10,8 @@ class PageDependencies {
     injector.registerFactory<Widget>(() => const CreatePasswordSuccess(), instanceName: CreatePasswordSuccess.routeName);
     injector.registerFactory<Widget>(() => const MainPage(), instanceName: MainPage.routeName);
     injector.registerFactory<Widget>(() => const HomePage(), instanceName: HomePage.routeName);
+    injector.registerFactory<Widget>(() => const SendTokensPage(), instanceName: SendTokensPage.routeName);
+    injector.registerFactory<Widget>(() => const ReceiveQRPage(), instanceName: ReceiveQRPage.routeName);
+    injector.registerFactory<Widget>(() => const QRScannerPage(), instanceName: QRScannerPage.routeName);
   }
 }
