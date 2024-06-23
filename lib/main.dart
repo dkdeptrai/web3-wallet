@@ -1,15 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:web3_wallet/blocs/blocs.dart';
 import 'package:web3_wallet/dependencies/app_dependencies.dart';
+import 'package:web3_wallet/http_override.dart';
 import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/resources.dart';
 import 'package:web3_wallet/router/router.dart';
 import 'providers/wallet_provider.dart';
 
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
@@ -34,8 +38,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthenticationCubit>(create: (context) => AuthenticationCubit()),
-        BlocProvider<CreatePasswordCubit>(create: (context) => CreatePasswordCubit()),
+        BlocProvider<AuthenticationCubit>(
+            create: (context) => AuthenticationCubit()),
+        BlocProvider<CreatePasswordCubit>(
+            create: (context) => CreatePasswordCubit()),
         BlocProvider<WalletCubit>(create: (context) => WalletCubit()),
         BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
         BlocProvider<TokensCubit>(create: (context) => TokensCubit()),

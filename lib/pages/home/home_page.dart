@@ -25,7 +25,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final securedStorageWalletRepository = GetIt.I<WalletService>();
   final MarketService marketService = GetIt.I<MarketService>();
-  final SepoliaTransactionService transactionService = GetIt.I<SepoliaTransactionService>();
+  final SepoliaTransactionService transactionService =
+      GetIt.I<SepoliaTransactionService>();
   final TokenService tokenService = GetIt.I<TokenService>();
 
   String walletAddress = '';
@@ -121,7 +122,8 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimensions.defaultHorizontalPadding),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.defaultHorizontalPadding),
                   child: Text(
                     "Home",
                     style: Theme.of(context).textTheme.displayLarge,
@@ -129,7 +131,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 15),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimensions.defaultHorizontalPadding),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.defaultHorizontalPadding),
                   child: Text(
                     "Your wallet",
                     style: Theme.of(context).textTheme.displayMedium,
@@ -137,7 +140,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 15),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: AppDimensions.defaultHorizontalPadding),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.defaultHorizontalPadding),
                   width: double.infinity,
                   padding: const EdgeInsets.all(20.0),
                   decoration: BoxDecoration(
@@ -184,7 +188,8 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(height: 12),
                               Text(
                                 "Send",
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),
@@ -202,7 +207,8 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(height: 12),
                               Text(
                                 "Receive",
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),
@@ -220,7 +226,8 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(height: 12),
                               Text(
                                 "Reload",
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),
@@ -245,7 +252,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         decoration: BoxDecoration(
                           color: appColors.bgCard2,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(40)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +281,9 @@ class _HomePageState extends State<HomePage> {
                                 stream: marketService.getStream(),
                                 builder: (context, snapshot) {
                                   print("Snapshot: $snapshot");
-                                  return Text(snapshot.hasData ? snapshot.data.toString() : "No data");
+                                  return Text(snapshot.hasData
+                                      ? snapshot.data.toString()
+                                      : "No data");
                                 }),
                             Expanded(
                               child: PageView(
