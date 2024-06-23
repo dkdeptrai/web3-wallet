@@ -47,8 +47,9 @@ class _HomePageState extends State<HomePage> {
         pvKey = privateKey;
       });
       print("Private Key: $pvKey");
+      print("Problematic wallet address: ${walletAddress}");
       EtherAmount latestBalance =
-          await transactionService.getBalance(address.hex);
+          await transactionService.getBalance(walletAddress);
       String latestBalanceInEther =
           latestBalance.getValueInUnit(EtherUnit.ether).toString();
 
