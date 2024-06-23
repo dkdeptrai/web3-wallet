@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:web3_wallet/extensions/extensions.dart';
 import 'package:web3_wallet/resources/resources.dart';
 
 class TrendingItemWidget extends StatelessWidget {
-  const TrendingItemWidget({super.key});
+  final String name;
+  final String symbol;
+  final String code;
+  final String imagePath;
+  final double rate;
+  final hourDelta;
+
+  const TrendingItemWidget({
+    super.key,
+    required this.name,
+    required this.code,
+    required this.symbol,
+    required this.imagePath,
+    required this.rate,
+    this.hourDelta,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -10,17 +26,17 @@ class TrendingItemWidget extends StatelessWidget {
 
     return Row(
       children: [
-        Image.asset(AppAssets.imgBitcoin3),
+        Image.network(imagePath, width: 40, height: 40),
         const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Bitcoin",
+              name,
               style: Theme.of(context).textTheme.displaySmall,
             ),
             Text(
-              "BTC",
+              code,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
             ),
           ],
@@ -30,11 +46,11 @@ class TrendingItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "\$213",
+              rate.toCurrencyFormat,
               style: Theme.of(context).textTheme.displaySmall,
             ),
             Text(
-              "BTC",
+              "\$$hourDelta",
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
             ),
           ],

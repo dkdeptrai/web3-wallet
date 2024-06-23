@@ -51,6 +51,10 @@ class MarketServiceImpl implements MarketService {
     _streamWrapper = SocketIoStreamWrapper();
     _streamWrapper.listenToEvent(socket, 'newPrice');
 
+    socket.listenersAny().forEach((element) {
+      print('Listener: $element');
+    });
+
     socket.onConnect((_) {
       print('Connected to Socket.IO Server');
       socket.emit('startCoinsPricePolling');
