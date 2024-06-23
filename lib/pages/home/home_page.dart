@@ -5,10 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:web3_wallet/blocs/blocs.dart';
+import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
 import 'package:web3_wallet/constants/dimensions.dart';
 import 'package:web3_wallet/model/token_model.dart';
 import 'package:web3_wallet/pages/home/widgets/trending_tab.dart';
 import 'package:web3_wallet/pages/home/widgets/widgets.dart';
+import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3_wallet/resources/resources.dart';
 import 'package:web3_wallet/services/services.dart';
@@ -151,21 +153,15 @@ class _HomePageState extends State<HomePage> {
                         "Total balance",
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
+                      const SizedBox(height: 8),
                       BlocBuilder<WalletCubit, WalletState>(
                         builder: (context, state) {
-                          if (state is WalletLoaded) {
-                            return Text(
-                              "\$ ${state.balance}",
-                              style: Theme.of(context).textTheme.titleLarge,
-                            );
-                          }
                           return Text(
-                            "...",
+                            state is WalletLoaded ? "\$ ${state.balance}" : "...",
                             style: Theme.of(context).textTheme.titleLarge,
                           );
                         },
                       ),
-                      const SizedBox(height: 8),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                                 backgroundColor: appColors.bgCard1,
                                 child: IconButton(
                                   padding: const EdgeInsets.all(20),
-                                  onPressed: () {},
+                                  onPressed: _navigateToSendTokenPage,
                                   icon: SvgPicture.asset(AppAssets.icSend),
                                 ),
                               ),
@@ -196,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                                 child: IconButton(
                                   padding: const EdgeInsets.all(20),
                                   icon: SvgPicture.asset(AppAssets.icReceive),
-                                  onPressed: () {},
+                                  onPressed: _navigateToReceiveTokenPage,
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -213,8 +209,11 @@ class _HomePageState extends State<HomePage> {
                                 backgroundColor: appColors.bgCard1,
                                 child: IconButton(
                                   padding: const EdgeInsets.all(20),
-                                  icon: SvgPicture.asset(AppAssets.icReceive),
-                                  onPressed: () {},
+                                  icon: CustomSvgImage(
+                                    imagePath: AppAssets.icReload,
+                                    color: appColors.orange,
+                                  ),
+                                  onPressed: _onReload,
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -450,5 +449,17 @@ class _HomePageState extends State<HomePage> {
 
   void _onChangeTab(int newIndex) {
     context.read<HomeCubit>().changeTab(newIndex);
+  }
+
+  void _navigateToSendTokenPage() {
+    Navigator.pushNamed(context, SendTokensPage.routeName);
+  }
+
+  void _navigateToReceiveTokenPage() {
+    Navigator.pushNamed(context, ReceiveQRPage.routeName);
+  }
+
+  void _onReload() {
+    context.read<WalletCubit>().loadWallet();
   }
 }

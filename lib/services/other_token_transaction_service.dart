@@ -43,11 +43,11 @@ class OtherTokenService extends TransactionService {
   }
 
   @override
-  Future<TransactionReceipt> sendTransaction({required String privateKey, required String recipientAddress, required String amountToSend}) async {
+  Future<TransactionReceipt> sendTransaction({required String privateKey, required String recipientAddress, required double amountToSend}) async {
     if (_contractAddress == null) throw WalletNotFoundException("Contract address is not set");
 
     try {
-      final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
+      final amountInWei = BigInt.from(amountToSend * pow(10, 18));
 
       final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
       final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress!));

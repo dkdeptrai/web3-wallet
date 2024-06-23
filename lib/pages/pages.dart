@@ -4,3 +4,6 @@ export 'create_password/create_password.dart';
 export 'create_password_success/create_password_success.dart';
 export 'home/home_page.dart';
 export 'main/main_page.dart';
+export 'send_tokens.dart';
+export 'receive_qr/receive_qr_page.dart';
+export 'qr_scanner/qr_scanner.dart';

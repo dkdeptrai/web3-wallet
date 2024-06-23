@@ -7,7 +7,7 @@ abstract class TransactionService {
   Future<TransactionReceipt> sendTransaction({
     required String privateKey,
     required String recipientAddress,
-    required String amountToSend,
+    required double amountToSend,
   });
   bool isInitialized();
 }
