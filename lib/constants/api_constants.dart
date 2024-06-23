@@ -1,3 +1,3 @@
 class ApiConstants {
-  static const String webSocketUrl = "ws://192.168.0.8:3000";
+  static const String webSocketUrl = "wss://192.168.50.177:3000";
 }
