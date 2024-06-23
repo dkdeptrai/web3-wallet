@@ -15,28 +15,35 @@ class TrendingTab extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List data = snapshot.data;
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                final item = data[index];
-                return TrendingItemWidget(
-                  name: item['name'] ?? "",
-                  code: item['code'] ?? "",
-                  symbol: item['symbol'] ?? "",
-                  imagePath: item['png64'] ?? "",
-                  rate: item['rate'] ?? 0.0,
-                  hourDelta: item['delta']['hour'] ?? "",
-                );
-              },
+            return SafeArea(
+              child: ListView.separated(
+                padding: const EdgeInsets.only(bottom: 20),
+                shrinkWrap: true,
+                itemCount: data.length,
+                separatorBuilder: (context, index) {
+                  return const SizedBox(height: 15);
+                },
+                itemBuilder: (context, index) {
+                  final item = data[index];
+                  return TrendingItemWidget(
+                    name: item['name'] ?? "",
+                    code: item['code'] ?? "",
+                    symbol: item['symbol'] ?? "",
+                    imagePath: item['png64'] ?? "",
+                    rate: item['rate'] ?? 0.0,
+                    hourDelta: item['delta']['hour'] ?? "",
+                    colorCode: item['color'] ?? 0,
+                  );
+                },
+              ),
             );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CustomLoadingWidget(),
             );
           }
-          return Center(
+          return const Center(
             child: Text("No data"),
           );
         });

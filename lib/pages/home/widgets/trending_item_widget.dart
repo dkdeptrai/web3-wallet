@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
 import 'package:web3_wallet/extensions/extensions.dart';
 import 'package:web3_wallet/resources/resources.dart';
 
@@ -9,6 +10,7 @@ class TrendingItemWidget extends StatelessWidget {
   final String imagePath;
   final double rate;
   final hourDelta;
+  final String colorCode;
 
   const TrendingItemWidget({
     super.key,
@@ -18,6 +20,7 @@ class TrendingItemWidget extends StatelessWidget {
     required this.imagePath,
     required this.rate,
     this.hourDelta,
+    required this.colorCode,
   });
 
   @override
@@ -26,7 +29,11 @@ class TrendingItemWidget extends StatelessWidget {
 
     return Row(
       children: [
-        Image.network(imagePath, width: 40, height: 40),
+        CircleAvatar(
+          backgroundColor: Color(int.parse("0xFF${colorCode.replaceAll("#", "")}")).withOpacity(0.2),
+          child: Image.network(imagePath, width: 30, height: 30),
+          radius: 25,
+        ),
         const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,6 +42,7 @@ class TrendingItemWidget extends StatelessWidget {
               name,
               style: Theme.of(context).textTheme.displaySmall,
             ),
+            const SizedBox(height: 5),
             Text(
               code,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
@@ -49,9 +57,22 @@ class TrendingItemWidget extends StatelessWidget {
               rate.toCurrencyFormat,
               style: Theme.of(context).textTheme.displaySmall,
             ),
-            Text(
-              "\$$hourDelta",
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
+            const SizedBox(height: 5),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomSvgImage(
+                  imagePath: hourDelta > 0 ? AppAssets.icChevronUp : AppAssets.icChevronDown,
+                  width: 16,
+                  height: 16,
+                  color: hourDelta > 0 ? appColors.green : appColors.red,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  "\$$hourDelta",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
+                ),
+              ],
             ),
           ],
         ),

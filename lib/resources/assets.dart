@@ -13,6 +13,8 @@ class AppAssets {
   static const String icScan = "$iconsPath/ic_scan.svg";
   static const String icUser = "$iconsPath/ic_user.svg";
   static const String icUserWithBg = "$iconsPath/ic_user_with_bg.svg";
+  static const String icChevronUp = "$iconsPath/ic_chevron_up.svg";
+  static const String icChevronDown = "$iconsPath/ic_chevron_down.svg";
 
   // Images
   static const String imgRobot3 = "$imagesPath/img_robot_3.png";
