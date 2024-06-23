@@ -7,19 +7,20 @@ import 'package:web3dart/web3dart.dart';
 
 class SepoliaTransactionService extends TransactionService {
   final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
-  late Web3Client _client;
+  Web3Client? _client;
 
   SepoliaTransactionService();
 
   @override
-  Future<void> init() async {
-    _client = await Web3Client(_apiUrl, Client());
+  void init() {
+    _client = Web3Client(_apiUrl, Client());
   }
 
   @override
   Future<EtherAmount> getBalance(String address) async {
     final EthereumAddress ethAddress = EthereumAddress.fromHex(address);
-    final balance = await _client.getBalance(ethAddress);
+    if (_client == null) throw ('Web3Client is not initialized');
+    final balance = await _client!.getBalance(ethAddress);
     return balance;
   }
 
@@ -34,7 +35,9 @@ class SepoliaTransactionService extends TransactionService {
 
       final Credentials credentials = EthPrivateKey.fromHex(privateKey);
 
-      final gasPrice = await _client.getGasPrice();
+      if (_client == null) throw ('Web3Client is not initialized');
+
+      final gasPrice = await _client!.getGasPrice();
 
       final Transaction transaction = Transaction(
         from: await credentials.address,
@@ -44,12 +47,12 @@ class SepoliaTransactionService extends TransactionService {
         maxGas: 20000000,
       );
 
-      final signedTx = await _client.signTransaction(credentials, transaction, chainId: 11155111);
-      final txHash = await _client.sendRawTransaction(signedTx);
+      final signedTx = await _client!.signTransaction(credentials, transaction, chainId: 11155111);
+      final txHash = await _client!.sendRawTransaction(signedTx);
       TransactionReceipt? receipt;
       while (receipt == null) {
         await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
-        receipt = await _client.getTransactionReceipt(txHash);
+        receipt = await _client!.getTransactionReceipt(txHash);
       }
 
       return receipt;
@@ -57,5 +60,15 @@ class SepoliaTransactionService extends TransactionService {
       print('Transaction failed: $e');
       throw ('Transaction failed: $e');
     }
+  }
+
+  @override
+  bool isInitialized() {
+    return _client != null;
+  }
+
+  @override
+  void setContractAddress(String address) {
+    // TODO: implement setContractAddress
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web3_wallet/common_widgets/common_widgets.dart';
 import 'package:web3_wallet/constants/constants.dart';
-import 'package:web3_wallet/pages/home/home_page.dart';
+import 'package:web3_wallet/pages/main/main_page.dart';
 import 'package:web3_wallet/resources/resources.dart';
 
 class CreatePasswordSuccess extends StatelessWidget {
@@ -53,6 +53,6 @@ class CreatePasswordSuccess extends StatelessWidget {
   }
 
   void _onDone(BuildContext context) {
-    Navigator.pushNamed(context, HomePage.routeName);
+    Navigator.pushNamed(context, MainPage.routeName);
   }
 }

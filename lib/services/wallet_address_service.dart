@@ -1,7 +1,8 @@
 import 'package:dart_bip32_bip44_noflutter/dart_bip32_bip44_noflutter.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hex/hex.dart';
-import 'package:web3_wallet/repository/wallet_repository.dart';
+import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:bip39/bip39.dart' as bip39;
 
@@ -14,7 +15,8 @@ abstract class WalletAddressService {
 }
 
 class ETHWalletService implements WalletAddressService {
-  final walletRepository = SecureStorageWalletRepository();
+  final walletRepository = GetIt.I<WalletService>();
+
   @override
   String generateMnemonic() {
     return bip39.generateMnemonic();

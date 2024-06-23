@@ -8,6 +8,7 @@ class PageDependencies {
     injector.registerFactory<Widget>(() => const ChooseLoginMethodPage(), instanceName: ChooseLoginMethodPage.routeName);
     injector.registerFactory<Widget>(() => const CreatePasswordPage(), instanceName: CreatePasswordPage.routeName);
     injector.registerFactory<Widget>(() => const CreatePasswordSuccess(), instanceName: CreatePasswordSuccess.routeName);
+    injector.registerFactory<Widget>(() => const MainPage(), instanceName: MainPage.routeName);
     injector.registerFactory<Widget>(() => const HomePage(), instanceName: HomePage.routeName);
   }
 }
