@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web3_wallet/common_widgets/common_widgets.dart';
 import 'package:web3_wallet/pages/home/home_page.dart';
+import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/assets.dart';
 
 class MainPage extends StatefulWidget {
@@ -38,6 +39,9 @@ class _MainPageState extends State<MainPage> {
         index: _currentIndex,
         children: [
           HomePage(),
+          Container(color: Colors.red),
+          Container(color: Colors.green),
+          AccountPage(),
         ],
       ),
     );

@@ -15,6 +15,10 @@ class AppAssets {
   static const String icUserWithBg = "$iconsPath/ic_user_with_bg.svg";
   static const String icChevronUp = "$iconsPath/ic_chevron_up.svg";
   static const String icChevronDown = "$iconsPath/ic_chevron_down.svg";
+  static const String icChevronRight = "$iconsPath/ic_chevron_right.svg";
+  static const String icPreferences = "$iconsPath/ic_preferences.svg";
+  static const String icHelp = "$iconsPath/ic_help.svg";
+  static const String icLogout = "$iconsPath/ic_logout.svg";
 
   // Images
   static const String imgRobot3 = "$imagesPath/img_robot_3.png";

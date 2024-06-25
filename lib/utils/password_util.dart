@@ -7,9 +7,17 @@ class PasswordUtil {
     secureStorage.write(key: 'password', value: password);
   }
 
+  static Future<void> deletePassword() async {
+    final secureStorage = GetIt.I.get<FlutterSecureStorage>();
+    secureStorage.delete(key: 'password');
+  }
+
   static Future<bool> verifyPassword(String password) async {
     final secureStorage = GetIt.I.get<FlutterSecureStorage>();
+
     final storedPassword = await secureStorage.read(key: 'password');
+    print("storedPassword: $storedPassword");
+    print(password);
     return storedPassword == password;
   }
 

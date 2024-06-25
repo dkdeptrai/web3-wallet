@@ -1,18 +1,8 @@
 import 'package:dart_bip32_bip44_noflutter/dart_bip32_bip44_noflutter.dart';
-import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hex/hex.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:bip39/bip39.dart' as bip39;
-
-abstract class WalletAddressService {
-  String generateMnemonic();
-  Future<String> getPrivateKeyFromMnemonic(String mnemonic);
-  Future<EthereumAddress> getPublicKey(String privateKey);
-  Future<void> importWalletFromSeed(String mnemonic);
-  Future<void> importWalletFromPrivateKey(String privateKey);
-}
 
 class ETHWalletService implements WalletAddressService {
   final walletRepository = GetIt.I<WalletService>();

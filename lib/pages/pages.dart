@@ -7,3 +7,5 @@ export 'main/main_page.dart';
 export 'send_tokens.dart';
 export 'receive_qr/receive_qr_page.dart';
 export 'qr_scanner/qr_scanner.dart';
+export 'account/account_page.dart';
+export 'import_from_seed_phrase/import_from_seed_phrase_page.dart';

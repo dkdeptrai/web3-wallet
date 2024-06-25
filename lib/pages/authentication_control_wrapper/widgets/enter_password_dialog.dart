@@ -77,7 +77,6 @@ class _EnterPasswordDialogState extends State<EnterPasswordDialog> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    final cubit = context.read<AuthenticationCubit>();
-    cubit.authenticate(password: widget.passwordController.text);
+    context.read<AuthenticationCubit>().authenticate(password: widget.passwordController.text);
   }
 }

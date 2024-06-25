@@ -38,14 +38,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthenticationCubit>(
-            create: (context) => AuthenticationCubit()),
-        BlocProvider<CreatePasswordCubit>(
-            create: (context) => CreatePasswordCubit()),
+        BlocProvider<AuthenticationCubit>(create: (context) => AuthenticationCubit()),
+        BlocProvider<CreatePasswordCubit>(create: (context) => CreatePasswordCubit()),
         BlocProvider<WalletCubit>(create: (context) => WalletCubit()),
         BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
         BlocProvider<TokensCubit>(create: (context) => TokensCubit()),
         BlocProvider<SendTokensCubit>(create: (context) => SendTokensCubit()),
+        BlocProvider<ImportFromSeedCubit>(create: (context) => ImportFromSeedCubit()),
       ],
       child: MaterialApp(
         theme: AppThemes().lightTheme,

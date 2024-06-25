@@ -26,7 +26,7 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
         if (!mounted) {
           return;
         }
-        Navigator.pushNamed(context, CreatePasswordPage.routeName);
+        Navigator.pushNamed(context, ChooseLoginMethodPage.routeName);
         return;
       }
       if (!mounted) {
@@ -41,6 +41,14 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
             );
           });
     });
+    context.read<AuthenticationCubit>().stream.listen((state) {
+      if (state is Authenticated) {
+        Navigator.pushNamed(context, MainPage.routeName);
+      }
+      if (state is Unauthenticated) {
+        Navigator.pushNamedAndRemoveUntil(context, ChooseLoginMethodPage.routeName, (route) => false);
+      }
+    });
     super.initState();
   }
 
@@ -48,11 +56,7 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocConsumer<AuthenticationCubit, AuthenticationState>(
-        listener: (context, state) {
-          if (state is Authenticated) {
-            Navigator.pushNamed(context, MainPage.routeName);
-          }
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           return Center(
             child: Image.asset(AppAssets.imgRobot3),
