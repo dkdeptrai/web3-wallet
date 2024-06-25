@@ -39,8 +39,8 @@ class _MainPageState extends State<MainPage> {
         index: _currentIndex,
         children: [
           HomePage(),
-          Container(color: Colors.red),
           Container(color: Colors.green),
+          NewsPage(),
           AccountPage(),
         ],
       ),

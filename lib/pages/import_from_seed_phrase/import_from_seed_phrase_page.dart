@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web3_wallet/blocs/blocs.dart';
 import 'package:web3_wallet/common_widgets/custom_button_widget.dart';
-import 'package:web3_wallet/common_widgets/custom_loading_widget.dart';
 import 'package:web3_wallet/common_widgets/custom_text_form_field.dart';
 import 'package:web3_wallet/constants/dimensions.dart';
 import 'package:web3_wallet/pages/pages.dart';
@@ -120,16 +119,8 @@ class _ImportFromSeedPageState extends State<ImportFromSeedPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const AlertDialog(
-            content: CustomLoadingWidget(),
-          );
-        });
     await context.read<ImportFromSeedCubit>().importFromSeed(_seedPhraseController.text, _passwordController.text);
     if (!mounted) return;
-    Navigator.pop(context);
     Navigator.pushNamed(context, AuthControlWrapperPage.routeName);
   }
 }

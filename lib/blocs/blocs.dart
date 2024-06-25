@@ -5,3 +5,4 @@ export 'home_cubit/home_cubit.dart';
 export 'tokens_cubit/tokens_cubit.dart';
 export 'send_tokens_cubit/send_tokens_cubit.dart';
 export 'import_from_seed_cubit/import_from_seed_cubit.dart';
+export 'news_cubit/news_cubit.dart';

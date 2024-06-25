@@ -182,7 +182,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: _navigateToQRScanner,
+                                  onPressed: () => _navigateToQRScanner(),
                                   icon: CustomSvgImage(
                                     imagePath: AppAssets.icScan,
                                     color: appColors.softPurple,
@@ -198,7 +198,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
                     CustomButton.primaryButton(
                       context: context,
                       text: "Send",
-                      onTap: sendTransaction,
+                      onTap: _sendTransaction,
                     ),
                   ],
                 ),
@@ -210,35 +210,35 @@ class _SendTokensPageState extends State<SendTokensPage> {
     );
   }
 
-  void _navigateToQRScanner() {
-    var result = Navigator.pushNamed(context, QRScannerPage.routeName);
+  Future<void> _navigateToQRScanner() async {
+    var result = await Navigator.pushNamed(context, QRScannerPage.routeName);
     _recipientController.text = result.toString();
   }
 
-  Future<void> sendTransaction() async {
-    // print("Sending");
-    // if (!_formKey.currentState!.validate()) {
-    //   return;
-    // }
-    // await context.read<SendTokensCubit>().sendTokens(
-    //       recipientWalletAddress: _recipientController.text.trim(),
-    //       amount: double.parse(_amountController.text.trim()),
-    //     );
-    // if (!mounted) return;
-    // Navigator.pop(context);
-    // String recipient = recipientController.text;
-    // String amount = amountController.text;
-    // if (recipient.isEmpty || amount.isEmpty) {
-    //   return;
-    // }
+  Future<void> _sendTransaction() async {
+    print("Sending");
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    await context.read<SendTokensCubit>().sendTokens(
+          recipientWalletAddress: _recipientController.text.trim(),
+          amount: double.parse(_amountController.text.trim()),
+        );
+    if (!mounted) return;
+    Navigator.pop(context);
+    String recipient = _recipientController.text;
+    String amount = _amountController.text;
+    if (recipient.isEmpty || amount.isEmpty) {
+      return;
+    }
     // isLoading = true;
-    final res = await sepoliaTransactionService.sendTransaction(
-      amountToSend: double.parse(_amountController.text.trim()),
-      privateKey: "e99f2a27be5f8543ddbb6774adaef37b21b99ff7bbd5f1389bca0c6acc75389b",
-      recipientAddress: _recipientController.text.trim(),
-    );
+    // final res = await sepoliaTransactionService.sendTransaction(
+    //   amountToSend: double.parse(_amountController.text.trim()),
+    //   privateKey: "e99f2a27be5f8543ddbb6774adaef37b21b99ff7bbd5f1389bca0c6acc75389b",
+    //   recipientAddress: _recipientController.text.trim(),
+    // );
     // isLoading = false;
-    print('Transaction hash: $res');
+    // print('Transaction hash: $res');
     // Navigator.pop(context);
   }
 }
