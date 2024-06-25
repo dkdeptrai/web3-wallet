@@ -26,13 +26,14 @@ class TrendingItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).extension<AppColors>()!;
+    final deltaPercentage = (1 - hourDelta) * 100;
 
     return Row(
       children: [
         CircleAvatar(
           backgroundColor: Color(int.parse("0xFF${colorCode.replaceAll("#", "")}")).withOpacity(0.2),
-          child: Image.network(imagePath, width: 30, height: 30),
           radius: 25,
+          child: Image.network(imagePath, width: 30, height: 30),
         ),
         const SizedBox(width: 20),
         Column(
@@ -62,10 +63,10 @@ class TrendingItemWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CustomSvgImage(
-                  imagePath: hourDelta > 0 ? AppAssets.icChevronUp : AppAssets.icChevronDown,
+                  imagePath: deltaPercentage > 0 ? AppAssets.icChevronUp : AppAssets.icChevronDown,
                   width: 16,
                   height: 16,
-                  color: hourDelta > 0 ? appColors.green : appColors.red,
+                  color: deltaPercentage > 0 ? appColors.green : appColors.red,
                 ),
                 const SizedBox(width: 5),
                 Text(

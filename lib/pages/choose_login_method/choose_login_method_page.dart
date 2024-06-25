@@ -80,7 +80,7 @@ class ChooseLoginMethodPage extends StatelessWidget {
                       SizedBox(height: size.height * 0.068),
                       CustomButton.primaryButton(
                         context: context,
-                        onTap: () => _navigateToCreateWallet(context),
+                        onTap: () => _navigateToImportFromSeedPage(context),
                         text: "Import from seed phrase",
                       ),
                       const SizedBox(height: 40),
@@ -103,6 +103,10 @@ class ChooseLoginMethodPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _navigateToImportFromSeedPage(BuildContext context) {
+    Navigator.pushNamed(context, ImportFromSeedPage.routeName);
   }
 
   void _navigateToCreateWallet(BuildContext context) {

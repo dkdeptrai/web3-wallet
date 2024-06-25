@@ -16,4 +16,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     emit(const Authenticated());
     print("Authenticated!");
   }
+
+  Future<void> logout() async {
+    await PasswordUtil.deletePassword();
+    emit(const Unauthenticated());
+    print("Logged out!");
+  }
 }

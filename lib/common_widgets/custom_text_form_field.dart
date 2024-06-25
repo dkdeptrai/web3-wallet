@@ -14,6 +14,7 @@ class CustomTextFormField extends StatelessWidget {
   final Widget? suffix;
   final Widget? prefix;
   final Widget? prefixIcon;
+  final int? maxLines;
 
   const CustomTextFormField._({
     this.controller,
@@ -27,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
     this.prefix,
     this.prefixIcon,
     this.suffix,
+    this.maxLines,
   });
 
   factory CustomTextFormField.primary({
@@ -42,6 +44,7 @@ class CustomTextFormField extends StatelessWidget {
     Widget? prefix,
     Widget? prefixIcon,
     Widget? suffix,
+    int? maxLines = 1,
   }) {
     final appColors = Theme.of(context).extension<AppColors>()!;
 
@@ -57,6 +60,7 @@ class CustomTextFormField extends StatelessWidget {
       prefix: prefix,
       prefixIcon: prefixIcon,
       suffix: suffix,
+      maxLines: maxLines,
     );
   }
 
@@ -84,6 +88,7 @@ class CustomTextFormField extends StatelessWidget {
       cursorHeight: 25,
       validator: validator,
       obscureText: obscureText,
+      maxLines: maxLines,
     );
   }
 }

@@ -53,8 +53,7 @@ class CreateOrImportPage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Colors.blue, // Customize button background color
+                backgroundColor: Colors.blue, // Customize button background color
                 foregroundColor: Colors.white, // Customize button text color
                 padding: const EdgeInsets.all(16.0),
               ),
@@ -80,8 +79,7 @@ class CreateOrImportPage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Colors.white, // Customize button background color
+                backgroundColor: Colors.white, // Customize button background color
                 foregroundColor: Colors.black, // Customize button text color
                 padding: const EdgeInsets.all(16.0),
               ),

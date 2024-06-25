@@ -46,7 +46,10 @@ class _Step1ContentState extends State<Step1Content> {
                   hintText: "Password",
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || !ValidatorUtil.isPassword(value)) {
+                    if (value == null || value.isEmpty) {
+                      return "Password is required";
+                    }
+                    if (!ValidatorUtil.isPassword(value)) {
                       return "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number";
                     }
                     return null;
@@ -59,7 +62,10 @@ class _Step1ContentState extends State<Step1Content> {
                   hintText: "Confirm Password",
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || !ValidatorUtil.isPasswordMatch(_passwordController.text, _confirmPasswordController.text)) {
+                    if (value == null || value.isEmpty) {
+                      return "Password is required";
+                    }
+                    if (!ValidatorUtil.isPasswordMatch(_passwordController.text, _confirmPasswordController.text)) {
                       return "Password does not match";
                     }
                     return null;
