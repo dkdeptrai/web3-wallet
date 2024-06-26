@@ -6,4 +6,7 @@ class ApiConstants {
 
   // News apis
   static const String newsApi = "$apiBaseUrl/api/news";
+
+  // History apis
+  static const String fetchHistories = "$apiBaseUrl/api/web3-helper/get-transaction-history";
 }

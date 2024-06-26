@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:web3_wallet/common_widgets/common_widgets.dart';
-import 'package:web3_wallet/pages/home/home_page.dart';
 import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/assets.dart';
 
@@ -37,9 +36,9 @@ class _MainPageState extends State<MainPage> {
       ),
       body: IndexedStack(
         index: _currentIndex,
-        children: [
+        children: const [
           HomePage(),
-          Container(color: Colors.green),
+          HistoryPage(),
           NewsPage(),
           AccountPage(),
         ],

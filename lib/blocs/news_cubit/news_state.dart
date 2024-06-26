@@ -13,18 +13,24 @@ final class NewsLoading extends NewsState {}
 
 final class NewsLoaded extends NewsState {
   final List<Article> articles;
+  final int page;
+  final int pageSize;
 
-  NewsLoaded(this.articles);
+  const NewsLoaded({required this.articles, required this.page, required this.pageSize});
 
   @override
-  List<Object> get props => [articles];
+  List<Object> get props => [articles, page, pageSize];
 }
 
 final class NewsError extends NewsState {
   final String message;
 
-  NewsError(this.message);
+  const NewsError(this.message);
 
   @override
   List<Object> get props => [message];
+}
+
+final class NewsLoadingMore extends NewsLoaded {
+  const NewsLoadingMore({required super.articles, required super.page, required super.pageSize});
 }

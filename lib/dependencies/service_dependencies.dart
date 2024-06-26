@@ -11,6 +11,7 @@ class ServiceDependencies {
     injector.registerLazySingleton<MarketService>(() => MarketServiceImpl());
     injector.registerLazySingleton<TokenService>(() => TokenServiceImpl());
     injector.registerLazySingleton<OtherTokenService>(() => OtherTokenService(null));
+    injector.registerLazySingleton<HistoryService>(() => HistoryServiceImpl());
     injector.registerLazySingleton<NewsService>(() => NewsServiceImpl());
   }
 }

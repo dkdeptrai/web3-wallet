@@ -17,10 +17,23 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     context.read<NewsCubit>().loadNews();
+    _scrollController.addListener(() {
+      if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+        context.read<NewsCubit>().loadMoreNews();
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -58,12 +71,22 @@ class _NewsPageState extends State<NewsPage> {
                   if (state is NewsLoaded) {
                     final articles = state.articles;
                     return ListView.separated(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.defaultHorizontalPadding),
-                      itemCount: 10,
+                      itemCount: state.articles.length + 1,
                       separatorBuilder: (context, index) {
                         return const SizedBox(height: 20);
                       },
                       itemBuilder: (context, index) {
+                        if (index == articles.length) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: CustomLoadingWidget(size: 30),
+                            ),
+                          );
+                        }
+
                         final item = articles[index];
                         return Material(
                           color: Colors.transparent,

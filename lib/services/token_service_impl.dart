@@ -11,35 +11,30 @@ class TokenServiceImpl implements TokenService {
   @override
   Future<List<Token>> loadStoredTokens({required String walletAddress}) async {
     List<Token> tokens = [];
-    List<String>? tokenAddresses =
-        await _walletService.getStoredTokenAddresses();
+    List<String>? tokenAddresses = await _walletService.getStoredTokenAddresses();
     if (tokenAddresses != null && tokenAddresses.isNotEmpty) {
       for (String address in tokenAddresses) {
         _otherTokenService.setContractAddress(address);
 
-        Map<String, dynamic> tokenDetails =
-            await _otherTokenService.getTokenDetails();
+        Map<String, dynamic> tokenDetails = await _otherTokenService.getTokenDetails();
 
-        EtherAmount balance =
-            await _otherTokenService.getBalance(walletAddress);
+        EtherAmount balance = await _otherTokenService.getBalance(walletAddress);
         String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
 
-        print(
-            "Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+        print("Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
 
-        bool tokenExists = tokens.any((token) =>
-            token.name == tokenDetails['name'] &&
-            token.symbol == tokenDetails['symbol']);
+        bool tokenExists = tokens.any((token) => token.name == tokenDetails['name'] && token.symbol == tokenDetails['symbol']);
 
         if (!tokenExists) {
           Token token = Token(
-              name: tokenDetails['name'].toString(),
-              symbol: tokenDetails['symbol'].toString(),
-              balance: balanceStr);
+            name: tokenDetails['name'].toString(),
+            symbol: tokenDetails['symbol'].toString(),
+            balance: balanceStr,
+            contractAddress: address,
+          );
           tokens.add(token);
         } else {
-          print(
-              "Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+          print("Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
         }
       }
     }

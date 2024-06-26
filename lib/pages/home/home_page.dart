@@ -14,6 +14,7 @@ import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3_wallet/resources/resources.dart';
 import 'package:web3_wallet/services/services.dart';
+import 'package:web3_wallet/utils/clipboard_util.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -155,13 +156,36 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 8),
                       BlocBuilder<WalletCubit, WalletState>(
                         builder: (context, state) {
-                          return Text(
-                            state is WalletLoaded ? "\$ ${state.balance}" : "...",
-                            style: Theme.of(context).textTheme.titleLarge,
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                state is WalletLoaded ? "\$ ${state.balance}" : "...",
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              if (state is WalletLoaded)
+                                Row(
+                                  children: [
+                                    Text(
+                                      "${state.walletAddress.substring(0, 6)}.....${state.walletAddress.substring(state.walletAddress.length - 4)}",
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: appColors.title),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      onPressed: () => _onCopyWalletAddress(state.walletAddress),
+                                      icon: Icon(
+                                        Icons.copy,
+                                        color: appColors.title,
+                                        size: 16,
+                                      ),
+                                    )
+                                  ],
+                                )
+                            ],
                           );
                         },
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -454,5 +478,10 @@ class _HomePageState extends State<HomePage> {
 
   void _onReload() {
     context.read<WalletCubit>().loadWallet();
+  }
+
+  void _onCopyWalletAddress(String walletAddress) async {
+    await ClipboardUtil.copyToClipboard(walletAddress);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wallet address copied to clipboard')));
   }
 }
