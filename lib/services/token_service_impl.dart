@@ -45,6 +45,9 @@ class TokenServiceImpl implements TokenService {
   Future<void> importToken({required String address}) async {
     try {
       await _walletService.saveTokenAddress(address);
+      //! Instructions for importing token
+      // TODO: Save the address, then fetch the abi.json file content from Backend Server, then save it to local storage
+      // TODO: When loading token, load initialize the OtherTokenService with the abi.json file content from local storage
     } catch (e) {
       print("[TokenServiceImpl] Error importing token: $e");
       rethrow;
