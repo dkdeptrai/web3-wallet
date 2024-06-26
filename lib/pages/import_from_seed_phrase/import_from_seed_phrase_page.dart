@@ -119,7 +119,10 @@ class _ImportFromSeedPageState extends State<ImportFromSeedPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    await context.read<ImportFromSeedCubit>().importFromSeed(_seedPhraseController.text, _passwordController.text);
+    await context.read<ImportFromSeedCubit>().importFromSeed(
+          _seedPhraseController.text.trim(),
+          _passwordController.text.trim(),
+        );
     if (!mounted) return;
     Navigator.pushNamed(context, AuthControlWrapperPage.routeName);
   }
