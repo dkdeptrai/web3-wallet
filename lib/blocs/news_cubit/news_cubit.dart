@@ -15,9 +15,27 @@ class NewsCubit extends Cubit<NewsState> {
     emit(NewsLoading());
     try {
       final articles = await _newsService.fetchArticles();
-      emit(NewsLoaded(articles));
+      emit(NewsLoaded(articles: articles, page: 1, pageSize: articles.length));
     } catch (e) {
       emit(NewsError(e.toString()));
+    }
+  }
+
+  Future<void> loadMoreNews() async {
+    print("Load more news");
+    final currentState = state;
+    if (currentState is NewsLoaded) {
+      emit(NewsLoadingMore(articles: currentState.articles, page: currentState.page, pageSize: currentState.pageSize));
+      try {
+        final newArticles = await _newsService.fetchArticles(page: currentState.page + 1);
+        emit(NewsLoaded(
+          articles: [...currentState.articles, ...newArticles],
+          page: currentState.page + 1,
+          pageSize: currentState.articles.length + newArticles.length,
+        ));
+      } catch (e) {
+        emit(NewsError(e.toString()));
+      }
     }
   }
 }

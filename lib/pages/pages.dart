@@ -11,3 +11,4 @@ export 'account/account_page.dart';
 export 'import_from_seed_phrase/import_from_seed_phrase_page.dart';
 export 'news/news_page.dart';
 export 'article_details_page/article_details_page.dart';
+export 'history/history_page.dart';
