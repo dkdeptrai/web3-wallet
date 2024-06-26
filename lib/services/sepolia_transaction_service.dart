@@ -49,11 +49,13 @@ class SepoliaTransactionService extends TransactionService {
         maxGas: 20000000,
       );
 
-      final signedTx = await _client!.signTransaction(credentials, transaction, chainId: 11155111);
+      final signedTx = await _client!
+          .signTransaction(credentials, transaction, chainId: 11155111);
       final txHash = await _client!.sendRawTransaction(signedTx);
       TransactionReceipt? receipt;
       while (receipt == null) {
-        await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
+        await Future.delayed(
+            const Duration(seconds: 5)); // Poll every 5 seconds
         receipt = await _client!.getTransactionReceipt(txHash);
       }
       print("Send success: $receipt");

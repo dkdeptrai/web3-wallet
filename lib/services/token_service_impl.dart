@@ -11,25 +11,35 @@ class TokenServiceImpl implements TokenService {
   @override
   Future<List<Token>> loadStoredTokens({required String walletAddress}) async {
     List<Token> tokens = [];
-    List<String>? tokenAddresses = await _walletService.getStoredTokenAddresses();
+    List<String>? tokenAddresses =
+        await _walletService.getStoredTokenAddresses();
     if (tokenAddresses != null && tokenAddresses.isNotEmpty) {
       for (String address in tokenAddresses) {
         _otherTokenService.setContractAddress(address);
 
-        Map<String, dynamic> tokenDetails = await _otherTokenService.getTokenDetails();
+        Map<String, dynamic> tokenDetails =
+            await _otherTokenService.getTokenDetails();
 
-        EtherAmount balance = await _otherTokenService.getBalance(walletAddress);
+        EtherAmount balance =
+            await _otherTokenService.getBalance(walletAddress);
         String balanceStr = balance.getValueInUnit(EtherUnit.ether).toString();
 
-        print("Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+        print(
+            "Checking token: ${tokenDetails['name']} (${tokenDetails['symbol']})");
 
-        bool tokenExists = tokens.any((token) => token.name == tokenDetails['name'] && token.symbol == tokenDetails['symbol']);
+        bool tokenExists = tokens.any((token) =>
+            token.name == tokenDetails['name'] &&
+            token.symbol == tokenDetails['symbol']);
 
         if (!tokenExists) {
-          Token token = Token(name: tokenDetails['name'].toString(), symbol: tokenDetails['symbol'].toString(), balance: balanceStr);
+          Token token = Token(
+              name: tokenDetails['name'].toString(),
+              symbol: tokenDetails['symbol'].toString(),
+              balance: balanceStr);
           tokens.add(token);
         } else {
-          print("Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
+          print(
+              "Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");
         }
       }
     }
@@ -40,6 +50,9 @@ class TokenServiceImpl implements TokenService {
   Future<void> importToken({required String address}) async {
     try {
       await _walletService.saveTokenAddress(address);
+      //! Instructions for importing token
+      // TODO: Save the address, then fetch the abi.json file content from Backend Server, then save it to local storage
+      // TODO: When loading token, load initialize the OtherTokenService with the abi.json file content from local storage
     } catch (e) {
       print("[TokenServiceImpl] Error importing token: $e");
       rethrow;
