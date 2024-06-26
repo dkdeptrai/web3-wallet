@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-class History {
+class TransactionModel {
   String? blockNum;
   String? uniqueId;
   String? hash;
@@ -12,7 +12,7 @@ class History {
   String? category;
   RawContract? rawContract;
   Metadata? metadata;
-  History({
+  TransactionModel({
     this.blockNum,
     this.uniqueId,
     this.hash,
@@ -25,7 +25,7 @@ class History {
     this.metadata,
   });
 
-  History copyWith({
+  TransactionModel copyWith({
     String? blockNum,
     String? uniqueId,
     String? hash,
@@ -37,7 +37,7 @@ class History {
     RawContract? rawContract,
     Metadata? metadata,
   }) {
-    return History(
+    return TransactionModel(
       blockNum: blockNum ?? this.blockNum,
       uniqueId: uniqueId ?? this.uniqueId,
       hash: hash ?? this.hash,
@@ -66,14 +66,14 @@ class History {
     };
   }
 
-  factory History.fromMap(Map<String, dynamic> map) {
-    return History(
+  factory TransactionModel.fromMap(Map<String, dynamic> map) {
+    return TransactionModel(
       blockNum: map['blockNum'] != null ? map['blockNum'] as String : null,
       uniqueId: map['uniqueId'] != null ? map['uniqueId'] as String : null,
       hash: map['hash'] != null ? map['hash'] as String : null,
       from: map['from'] != null ? map['from'] as String : null,
       to: map['to'] != null ? map['to'] as String : null,
-      value: map['value'] != null ? map['value'] as double : null,
+      value: map['value']?.toDouble(),
       asset: map['asset'] != null ? map['asset'] as String : null,
       category: map['category'] != null ? map['category'] as String : null,
       rawContract: map['rawContract'] != null ? RawContract.fromMap(map['rawContract'] as Map<String, dynamic>) : null,
@@ -83,7 +83,7 @@ class History {
 
   String toJson() => json.encode(toMap());
 
-  factory History.fromJson(String source) => History.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory TransactionModel.fromJson(String source) => TransactionModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 class RawContract {
@@ -114,7 +114,7 @@ class RawContract {
 }
 
 class Metadata {
-  String? blockTimestamp;
+  DateTime? blockTimestamp;
 
   Metadata({this.blockTimestamp});
 
@@ -126,7 +126,7 @@ class Metadata {
 
   factory Metadata.fromMap(Map<String, dynamic> map) {
     return Metadata(
-      blockTimestamp: map['blockTimestamp'] != null ? map['blockTimestamp'] as String : null,
+      blockTimestamp: map['blockTimestamp'] != null ? DateTime.parse(map['blockTimestamp']) : null,
     );
   }
 

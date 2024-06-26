@@ -26,7 +26,12 @@ class TokenServiceImpl implements TokenService {
         bool tokenExists = tokens.any((token) => token.name == tokenDetails['name'] && token.symbol == tokenDetails['symbol']);
 
         if (!tokenExists) {
-          Token token = Token(name: tokenDetails['name'].toString(), symbol: tokenDetails['symbol'].toString(), balance: balanceStr);
+          Token token = Token(
+            name: tokenDetails['name'].toString(),
+            symbol: tokenDetails['symbol'].toString(),
+            balance: balanceStr,
+            contractAddress: address,
+          );
           tokens.add(token);
         } else {
           print("Duplicate token found: ${tokenDetails['name']} (${tokenDetails['symbol']})");

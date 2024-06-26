@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<SendTokensCubit>(create: (context) => SendTokensCubit()),
         BlocProvider<ImportFromSeedCubit>(create: (context) => ImportFromSeedCubit()),
         BlocProvider<NewsCubit>(create: (context) => NewsCubit()),
+        BlocProvider<HistoryCubit>(create: (context) => HistoryCubit()),
       ],
       child: MaterialApp(
         theme: AppThemes().lightTheme,
