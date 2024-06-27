@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'package:convert/convert.dart';
 import 'package:flutter/services.dart';
@@ -64,10 +63,8 @@ class SepoliaTransactionService extends TransactionService {
         maxGas: 50000000,
       );
 
-      final signedTx = await _client.signTransaction(credentials, transaction,
-          chainId: 11155111);
-      final signedTxHex =
-          hexEncode(signedTx); // Convert the byte array to a hexadecimal string
+      final signedTx = await _client.signTransaction(credentials, transaction, chainId: 11155111);
+      final signedTxHex = hexEncode(signedTx); // Convert the byte array to a hexadecimal string
       print('Signed transaction: $signedTxHex');
       String url = backendUrl + "/api/web3-helper/send-raw-transaction";
       final response = await http.post(Uri.parse(url), body: {
@@ -104,16 +101,12 @@ class OtherTokenService extends TransactionService {
 
   @override
   Future<EtherAmount> getBalance(String address) async {
-    final abiCode =
-        await rootBundle.loadString('assets/abi/erc20tokenabi.json');
-    final contract = DeployedContract(
-        ContractAbi.fromJson(abiCode, 'ERC20Token'),
-        EthereumAddress.fromHex(_contractAddress));
+    final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
+    final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress));
     final params = [EthereumAddress.fromHex(address)];
     final balanceFunction = contract.function('balanceOf');
 
-    final balance = await _client.call(
-        contract: contract, function: balanceFunction, params: params);
+    final balance = await _client.call(contract: contract, function: balanceFunction, params: params);
 
     String balanceStr = balance.first.toString();
 
@@ -123,31 +116,24 @@ class OtherTokenService extends TransactionService {
   }
 
   @override
-  Future<void> sendTransaction(
-      {required String privateKey,
-      required String recipientAddress,
-      required String amountToSend}) async {
+  Future<void> sendTransaction({required String privateKey, required String recipientAddress, required String amountToSend}) async {
     try {
       final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
 
       final gasPrice = await _client.getGasPrice();
 
       // TODO: Repace with loading abi from local storage
-      final abiCode =
-          await rootBundle.loadString('assets/abi/erc20tokenabi.json');
+      final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
 
       final credentials = EthPrivateKey.fromHex(privateKey);
 
-      final contract = DeployedContract(
-          ContractAbi.fromJson(abiCode, 'ERC20Token'),
-          EthereumAddress.fromHex(_contractAddress));
+      final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress));
 
       final tokenDetails = getTokenDetails();
       final tokenSymbol = tokenDetails.then((value) => value['symbol']);
 
       final transferFunction = contract.function('transfer');
-      final data = transferFunction
-          .encodeCall([EthereumAddress.fromHex(recipientAddress), amountInWei]);
+      final data = transferFunction.encodeCall([EthereumAddress.fromHex(recipientAddress), amountInWei]);
 
       final transaction = Transaction.callContract(
           contract: contract,
@@ -157,8 +143,7 @@ class OtherTokenService extends TransactionService {
           maxGas: 50000000,
           nonce: await _client.getTransactionCount(credentials.address));
 
-      final signedTx = await _client.signTransaction(credentials, transaction,
-          chainId: 11155111);
+      final signedTx = await _client.signTransaction(credentials, transaction, chainId: 11155111);
 
       final signedTxHex = hexEncode(signedTx);
       String url = backendUrl + "/api/web3-helper/send-raw-transaction";
@@ -178,20 +163,15 @@ class OtherTokenService extends TransactionService {
 
   Future<Map<String, dynamic>> getTokenDetails() async {
     try {
-      final abiCode =
-          await rootBundle.loadString('assets/abi/erc20tokenabi.json');
-      final contract = DeployedContract(
-          ContractAbi.fromJson(abiCode, 'ERC20Token'),
-          EthereumAddress.fromHex(_contractAddress));
+      final abiCode = await rootBundle.loadString('assets/abi/erc20tokenabi.json');
+      final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress));
 
       final nameFunction = contract.function('name');
       final symbolFunction = contract.function('symbol');
 
-      final name = await _client
-          .call(contract: contract, function: nameFunction, params: []);
+      final name = await _client.call(contract: contract, function: nameFunction, params: []);
 
-      final symbol = await _client
-          .call(contract: contract, function: symbolFunction, params: []);
+      final symbol = await _client.call(contract: contract, function: symbolFunction, params: []);
 
       return {
         'name': name,

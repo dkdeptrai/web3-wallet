@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
 import 'package:web3_wallet/extensions/extensions.dart';
 import 'package:web3_wallet/resources/resources.dart';
+import 'package:web3_wallet/utils/decimal_format_util.dart';
 
 class TrendingItemWidget extends StatelessWidget {
   final String name;
@@ -26,7 +27,7 @@ class TrendingItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).extension<AppColors>()!;
-    final deltaPercentage = (1 - hourDelta) * 100;
+    final deltaPercentage = (hourDelta - 1) * 100;
 
     return Row(
       children: [
@@ -70,7 +71,7 @@ class TrendingItemWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  "\$$hourDelta",
+                  "${DecimalFormatUtil.formatDouble(deltaPercentage)}%",
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
                 ),
               ],

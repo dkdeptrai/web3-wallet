@@ -8,7 +8,6 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:web3_wallet/blocs/blocs.dart';
 import 'package:web3_wallet/common_widgets/common_widgets.dart';
-import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
 import 'package:web3_wallet/constants/dimensions.dart';
 import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/resources.dart';
@@ -109,7 +108,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
                 ),
               ),
               BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 150, sigmaY: 150),
+                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
                 child: Container(color: Colors.transparent),
               ),
               Padding(
@@ -142,7 +141,6 @@ class _SendTokensPageState extends State<SendTokensPage> {
                               style: Theme.of(context).textTheme.displayLarge,
                               textAlign: TextAlign.center,
                               validator: (value) {
-                                print(value);
                                 if (value == null || value.trim().isEmpty) {
                                   return "Amount is required";
                                 }
@@ -182,7 +180,9 @@ class _SendTokensPageState extends State<SendTokensPage> {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () => _navigateToQRScanner(),
+                                  onPressed: () async {
+                                    await _navigateToQRScanner();
+                                  },
                                   icon: CustomSvgImage(
                                     imagePath: AppAssets.icScan,
                                     color: appColors.softPurple,

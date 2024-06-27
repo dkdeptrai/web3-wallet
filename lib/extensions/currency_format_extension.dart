@@ -5,4 +5,8 @@ extension CurrencyFormatExt on double {
     final formatCurrency = NumberFormat.simpleCurrency();
     return formatCurrency.format(this);
   }
+
+  String get formatDoubleWith2Decimals {
+    return toStringAsFixed(2);
+  }
 }

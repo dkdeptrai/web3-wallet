@@ -23,12 +23,11 @@ class SendTokensCubit extends Cubit<SendTokensState> {
       emit(const SendTokensError('Private key not found'));
       return;
     }
-    final res = await sepoliaTransactionService.sendTransaction(
-      amountToSend: amount,
+    await sepoliaTransactionService.sendTransaction(
       privateKey: privateKey,
       recipientAddress: recipient.trim(),
+      amountToSend: amount.toString(),
     );
-    print("Transaction receipt: $res ");
     emit(const TokensSent());
   }
 }

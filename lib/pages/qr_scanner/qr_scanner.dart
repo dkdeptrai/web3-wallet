@@ -73,11 +73,11 @@ class _QRScannerPageState extends State<QRScannerPage> {
     setState(() {
       this.controller = controller;
     });
-    Navigator.pop(context, qrText);
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         qrText = scanData.code;
       });
     });
+    Navigator.pop(context, qrText);
   }
 }
