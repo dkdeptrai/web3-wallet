@@ -33,7 +33,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
   final _amountController = MaskedTextController(mask: '0.000.000-00');
   bool isLoading = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final String contractAddress;
+  String? contractAddress;
   String tokenSymbol = "ETH";
 
   @override

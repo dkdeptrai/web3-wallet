@@ -53,7 +53,7 @@ class SepoliaTransactionService implements TransactionService {
       final gasPrice = await _client!.getGasPrice();
 
       final Transaction transaction = Transaction(
-        from: await credentials.address,
+        from: credentials.address,
         to: EthereumAddress.fromHex(recipientAddress),
         value: EtherAmount.inWei(amountInWei),
         gasPrice: gasPrice,
