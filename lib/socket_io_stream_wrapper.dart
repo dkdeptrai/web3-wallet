@@ -14,7 +14,7 @@ class SocketIoStreamWrapper<T> {
   void listenToEvent(IO.Socket socket, String eventName,
       {Function(T)? onData}) {
     socket.on(eventName, (data) {
-      print("$eventName data: $data");
+      // print("$eventName data: $data");
       T dataList = data;
       _streamController.add(dataList); // Now handles List<dynamic>
       if (onData != null) {

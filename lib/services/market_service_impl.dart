@@ -50,7 +50,7 @@ class MarketServiceImpl implements MarketService {
     _streamWrapper.listenToEvent(socket, 'newPrice');
 
     socket.listenersAny().forEach((element) {
-      print('Listener: $element');
+      // print('Listener: $element');
     });
 
     socket.onConnect((_) {

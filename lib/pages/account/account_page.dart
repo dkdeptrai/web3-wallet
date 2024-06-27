@@ -19,10 +19,17 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  String name = "Name"; // Store updated name
+  String name = "Name";
 
   @override
   Widget build(BuildContext context) {
+    final state = context.read<AuthenticationCubit>().state;
+    print("Name: ${state}");
+
+    if (state is Authenticated) {
+      name = state.user.name;
+      // print("Name: $name");
+    }
     final appColors = Theme.of(context).extension<AppColors>()!;
     final Size size = MediaQuery.of(context).size;
 
@@ -160,13 +167,13 @@ class _AccountPageState extends State<AccountPage> {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => UpdateProfileDialog(
-        currentName: name, // Pass current name
+        currentName: name,
       ),
     );
 
     if (result != null && result['name'] != null) {
       setState(() {
-        name = result['name']; // Update name
+        name = result['name'];
       });
     }
   }
