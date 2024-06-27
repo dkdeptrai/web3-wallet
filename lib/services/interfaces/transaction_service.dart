@@ -4,7 +4,7 @@ abstract class TransactionService {
   void init();
   void setContractAddress(String address);
   Future<EtherAmount> getBalance(String address);
-  Future<void> sendTransaction({
+  Future<String?> sendTransaction({
     required String privateKey,
     required String recipientAddress,
     required String amountToSend,

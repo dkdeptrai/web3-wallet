@@ -7,12 +7,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:web3_wallet/constants/constants.dart';
+import 'package:web3_wallet/exceptions/api_exception.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3_wallet/services/services.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:http/http.dart' as http;
 
-class SepoliaTransactionService extends TransactionService {
+class SepoliaTransactionService implements TransactionService {
   final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
   Web3Client? _client;
 
@@ -78,7 +79,7 @@ class SepoliaTransactionService extends TransactionService {
         body: data,
       );
       String? txhash = jsonDecode(response.body)["transactionHash"];
-      if (txhash == null) throw ('Transaction failed');
+      if (txhash == null) throw ApiException(message: "Transaction failed");
 
       await _pendingTransactionService.createAndAddSocket(txhash);
       return txhash;

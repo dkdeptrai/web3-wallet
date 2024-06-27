@@ -33,10 +33,22 @@ class _SendTokensPageState extends State<SendTokensPage> {
   final _amountController = MaskedTextController(mask: '0.000.000-00');
   bool isLoading = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late final String contractAddress;
+  String tokenSymbol = "ETH";
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      contractAddress = args['contractAddress'];
+      tokenSymbol = args['tokenSymbol'];
+    }
   }
 
   @override
@@ -130,6 +142,11 @@ class _SendTokensPageState extends State<SendTokensPage> {
                         key: _formKey,
                         child: Column(
                           children: [
+                            Text(
+                              tokenSymbol,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                            ),
+                            const SizedBox(height: 10),
                             TextFormField(
                               controller: _amountController,
                               keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -234,6 +251,7 @@ class _SendTokensPageState extends State<SendTokensPage> {
     String? txhHash = await context.read<SendTokensCubit>().sendTokens(
           recipientWalletAddress: _recipientController.text.trim(),
           amount: double.parse(_amountController.text.trim()),
+          contractAddress: contractAddress,
         );
     if (!mounted) return;
     Navigator.pop(context);
@@ -241,92 +259,93 @@ class _SendTokensPageState extends State<SendTokensPage> {
     final appColors = Theme.of(context).extension<AppColors>()!;
     if (txhHash != null) {
       showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              backgroundColor: appColors.bgCard1,
-              content: SizedBox(
-                width: size.width - 2 * AppDimensions.defaultHorizontalPadding,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(AppAssets.imgOther4, height: 150),
-                    Text(
-                      "Transaction",
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(color: appColors.softPurple),
-                    ),
-                    const SizedBox(height: 30),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          "Recipient Address",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          AddressUtil.hideAddress(_recipientController.text),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "Time",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          DateTimeFormatUtil.formatDateTime(DateTime.now()),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "Amount",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          _amountController.text,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "Status",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
-                        ),
-                        const SizedBox(height: 10),
-                        StreamBuilder(
-                            stream: _pendingTransactionsService.getStream(txhHash)?.stream,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final data = snapshot.data as Map<String, dynamic>;
-                                final status = data['status'] != null ? (data['status']['status'] as String).toUpperCase() : "PENDING";
-                                final statusColor = status == "PENDING" ? appColors.orange : appColors.green;
-                                return Text(
-                                  status,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: statusColor),
-                                );
-                              }
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: appColors.bgCard1,
+            content: SizedBox(
+              width: size.width - 2 * AppDimensions.defaultHorizontalPadding,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(AppAssets.imgOther4, height: 150),
+                  Text(
+                    "Transaction",
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(color: appColors.softPurple),
+                  ),
+                  const SizedBox(height: 30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        "Recipient Address",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        AddressUtil.hideAddress(_recipientController.text),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Time",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        DateTimeFormatUtil.formatDateTime(DateTime.now()),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Amount",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _amountController.text,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Status",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                      ),
+                      const SizedBox(height: 10),
+                      StreamBuilder(
+                          stream: _pendingTransactionsService.getStream(txhHash)?.stream,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              final data = snapshot.data as Map<String, dynamic>;
+                              final status = data['status'] != null ? (data['status']['status'] as String).toUpperCase() : "PENDING";
+                              final statusColor = status == "PENDING" ? appColors.orange : appColors.green;
                               return Text(
-                                "PROCESSING",
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: appColors.orange),
+                                status,
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: statusColor),
                               );
-                            }),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                    CustomButton.secondaryButton(
-                      context: context,
-                      text: "OK",
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
+                            }
+                            return Text(
+                              "PROCESSING",
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: appColors.orange),
+                            );
+                          }),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                  CustomButton.secondaryButton(
+                    context: context,
+                    text: "OK",
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
-            );
-          });
+            ),
+          );
+        },
+      );
     }
   }
 }
