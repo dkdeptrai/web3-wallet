@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 import 'package:web3_wallet/constants/constants.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -8,6 +10,7 @@ import 'package:web3_wallet/socket_io_stream_wrapper.dart';
 class PendingTransactionServiceImpl implements PendingTransactionsService {
   final Map<String, IO.Socket> _pendingTransactionsSockets = {};
   final Map<String, SocketIoStreamWrapper> _pendingTransactionsStreams = {};
+  BuildContext? homeContext;
 
   Future<void> createAndAddSocket(String transactionHash) async {
     final IO.Socket socket = IO.io(ApiConstants.webSocketUrl, <String, dynamic>{
@@ -27,13 +30,19 @@ class PendingTransactionServiceImpl implements PendingTransactionsService {
       print('Error: $data');
     });
     _pendingTransactionsSockets[transactionHash] = socket;
-    final streamWrapper = SocketIoStreamWrapper();
-    streamWrapper.listenToEvent(socket, transactionHash);
+    final streamWrapper = SocketIoStreamWrapper<Map<String, dynamic>>();
+    streamWrapper.listenToEvent(socket, transactionHash, onData: (data) {
+      print('Data: $data');
+    });
     _pendingTransactionsStreams[transactionHash] = streamWrapper;
+    print("Hash: ${transactionHash}");
+    print("Stream: ${_pendingTransactionsStreams[transactionHash]}");
   }
 
-  Future<SocketIoStreamWrapper?> getStream(String transactionHash) async {
+  SocketIoStreamWrapper? getStream(String transactionHash) {
+    print("Transaction hash: $transactionHash ");
     final stream = _pendingTransactionsStreams[transactionHash];
+    print("Transaction stream: ${_pendingTransactionsStreams.entries} ");
     return stream;
   }
 
@@ -44,5 +53,10 @@ class PendingTransactionServiceImpl implements PendingTransactionsService {
     final stream = _pendingTransactionsStreams[transactionHash];
     stream?.dispose();
     _pendingTransactionsStreams.remove(transactionHash);
+  }
+
+  void setHomeContext(BuildContext context) {
+    print("Context: $context");
+    homeContext = context;
   }
 }

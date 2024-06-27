@@ -35,7 +35,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MarketServiceImpl implements MarketService {
   late IO.Socket socket;
-  late SocketIoStreamWrapper _streamWrapper;
+  late SocketIoStreamWrapper<List<dynamic>> _streamWrapper;
 
   MarketServiceImpl() {
     init();

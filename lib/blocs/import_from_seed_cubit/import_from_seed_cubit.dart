@@ -16,7 +16,7 @@ class ImportFromSeedCubit extends Cubit<ImportFromSeedState> {
     emit(ImportFromSeedLoading());
     try {
       // Save private key to local storage
-      await _walletAddressService.importWalletFromSeed(seedPhrase);
+      await _walletAddressService.importWalletFromSeed(seedPhrase.trim());
       // Save password to local storage
       await PasswordUtil.savePassword(password);
       // Save private key to wallet service
