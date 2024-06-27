@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:web3_wallet/common_widgets/common_widgets.dart';
 import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/assets.dart';
+import 'package:web3_wallet/services/pending_transaction_service_impl.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -13,6 +15,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final PendingTransactionServiceImpl _pendingTransactionServiceImpl = GetIt.I<PendingTransactionServiceImpl>();
   int _currentIndex = 0;
   List<String> imagePaths = [
     AppAssets.icHome,
@@ -23,6 +26,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    _pendingTransactionServiceImpl.setHomeContext(context);
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: NavBar(

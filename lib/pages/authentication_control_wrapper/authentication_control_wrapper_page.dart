@@ -46,6 +46,7 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
         Navigator.pushNamed(context, MainPage.routeName);
       }
       if (state is Unauthenticated) {
+        setState(() {});
         Navigator.pushNamedAndRemoveUntil(context, ChooseLoginMethodPage.routeName, (route) => false);
       }
     });

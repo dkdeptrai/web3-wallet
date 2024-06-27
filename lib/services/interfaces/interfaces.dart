@@ -5,3 +5,5 @@ export 'token_service.dart';
 export 'wallet_address_service.dart';
 export 'news_service.dart';
 export 'history_service.dart';
+export 'pending_transactions_service.dart';
+export 'auth_service.dart';

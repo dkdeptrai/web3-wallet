@@ -7,27 +7,45 @@ import 'package:web3_wallet/services/services.dart';
 part 'send_tokens_state.dart';
 
 class SendTokensCubit extends Cubit<SendTokensState> {
-  final SepoliaTransactionService sepoliaTransactionService = GetIt.I<SepoliaTransactionService>();
-  final WalletService walletService = GetIt.I<WalletService>();
+  final SepoliaTransactionService _sepoliaTransactionService = GetIt.I<SepoliaTransactionService>();
+  final WalletService _walletService = GetIt.I<WalletService>();
+  final OtherTokenService _otherTokenService = GetIt.I<OtherTokenService>();
 
   SendTokensCubit() : super(SendTokensInitial());
 
-  Future<void> sendTokens({
+  Future<String?> sendTokens({
     required String recipientWalletAddress,
     required double amount,
+    String? contractAddress,
   }) async {
     emit(SendingTokens());
-    String recipient = recipientWalletAddress;
-    final privateKey = await walletService.getPrivateKey();
-    if (privateKey == null) {
-      emit(const SendTokensError('Private key not found'));
-      return;
+    try {
+      String recipient = recipientWalletAddress;
+      final privateKey = await _walletService.getPrivateKey();
+      if (privateKey == null) {
+        emit(const SendTokensError('Private key not found'));
+        return null;
+      }
+      String? txnHash;
+      if (contractAddress != null && contractAddress.isNotEmpty) {
+        _otherTokenService.setContractAddress(contractAddress);
+        txnHash = await _otherTokenService.sendTransaction(
+          privateKey: privateKey,
+          recipientAddress: recipient.trim(),
+          amountToSend: amount.toString(),
+        );
+      } else {
+        txnHash = await _sepoliaTransactionService.sendTransaction(
+          privateKey: privateKey,
+          recipientAddress: recipient.trim(),
+          amountToSend: amount.toString(),
+        );
+      }
+      emit(const TokensSent());
+      return txnHash;
+    } catch (e) {
+      emit(SendTokensError(e.toString()));
+      return null;
     }
-    await sepoliaTransactionService.sendTransaction(
-      privateKey: privateKey,
-      recipientAddress: recipient.trim(),
-      amountToSend: amount.toString(),
-    );
-    emit(const TokensSent());
   }
 }

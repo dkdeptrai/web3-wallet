@@ -20,7 +20,7 @@ class TrendingItemWidget extends StatelessWidget {
     required this.symbol,
     required this.imagePath,
     required this.rate,
-    this.hourDelta,
+    required this.hourDelta,
     required this.colorCode,
   });
 

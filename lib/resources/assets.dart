@@ -28,4 +28,6 @@ class AppAssets {
   static const String imgBitcoin3 = "$imagesPath/img_bitcoin_3.png";
   static const String imgETH3 = "$imagesPath/img_eth_3.png";
   static const String imgOther3 = "$imagesPath/img_other_3.png";
+  static const String imgOther4 = "$imagesPath/img_other_4.png";
+  static const String imgOther5 = "$imagesPath/img_other_5.png";
 }
