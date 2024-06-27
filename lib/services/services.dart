@@ -6,3 +6,4 @@ export 'market_service_impl.dart';
 export 'token_service_impl.dart';
 export 'news_service_impl.dart';
 export 'history_service_impl.dart';
+export 'pending_transaction_service_impl.dart';

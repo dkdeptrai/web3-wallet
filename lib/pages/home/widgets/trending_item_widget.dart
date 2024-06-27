@@ -10,7 +10,7 @@ class TrendingItemWidget extends StatelessWidget {
   final String code;
   final String imagePath;
   final double rate;
-  final hourDelta;
+  final double hourDelta;
   final String colorCode;
 
   const TrendingItemWidget({
@@ -20,7 +20,7 @@ class TrendingItemWidget extends StatelessWidget {
     required this.symbol,
     required this.imagePath,
     required this.rate,
-    this.hourDelta,
+    required this.hourDelta,
     required this.colorCode,
   });
 

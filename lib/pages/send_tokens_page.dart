@@ -12,6 +12,8 @@ import 'package:web3_wallet/constants/dimensions.dart';
 import 'package:web3_wallet/pages/pages.dart';
 import 'package:web3_wallet/resources/resources.dart';
 import 'package:web3_wallet/services/services.dart';
+import 'package:web3_wallet/utils/address_util.dart';
+import 'package:web3_wallet/utils/date_time_format_util.dart';
 import 'package:web3_wallet/utils/validator_util.dart';
 
 class SendTokensPage extends StatefulWidget {
@@ -25,6 +27,7 @@ class SendTokensPage extends StatefulWidget {
 
 class _SendTokensPageState extends State<SendTokensPage> {
   final sepoliaTransactionService = GetIt.I<SepoliaTransactionService>();
+  final _pendingTransactionsService = GetIt.I.get<PendingTransactionServiceImpl>();
   final TextEditingController _recipientController = TextEditingController();
   // final TextEditingController _amountController = TextEditingController();
   final _amountController = MaskedTextController(mask: '0.000.000-00');
@@ -55,7 +58,6 @@ class _SendTokensPageState extends State<SendTokensPage> {
       ),
       body: BlocListener<SendTokensCubit, SendTokensState>(
         listener: (context, state) {
-          print(state);
           if (state is SendingTokens) {
             showDialog(
               context: context,
@@ -68,10 +70,18 @@ class _SendTokensPageState extends State<SendTokensPage> {
             );
           }
           if (state is TokensSent) {
+            // Navigator.pop(context);
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(
+            //     content: Text("Transaction sent successfully"),
+            //   ),
+            // );
+          }
+          if (state is SendTokensError) {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Transaction sent successfully"),
+                content: Text("Sending transaction failed. Please try again later."),
               ),
             );
           }
@@ -198,7 +208,9 @@ class _SendTokensPageState extends State<SendTokensPage> {
                     CustomButton.primaryButton(
                       context: context,
                       text: "Send",
-                      onTap: _sendTransaction,
+                      onTap: () async {
+                        await _sendTransaction();
+                      },
                     ),
                   ],
                 ),
@@ -216,30 +228,106 @@ class _SendTokensPageState extends State<SendTokensPage> {
   }
 
   Future<void> _sendTransaction() async {
-    print("Sending");
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    await context.read<SendTokensCubit>().sendTokens(
+    String? txhHash = await context.read<SendTokensCubit>().sendTokens(
           recipientWalletAddress: _recipientController.text.trim(),
           amount: double.parse(_amountController.text.trim()),
         );
     if (!mounted) return;
     Navigator.pop(context);
-    String recipient = _recipientController.text;
-    String amount = _amountController.text;
-    if (recipient.isEmpty || amount.isEmpty) {
-      return;
+    final Size size = MediaQuery.of(context).size;
+    final appColors = Theme.of(context).extension<AppColors>()!;
+    if (txhHash != null) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: appColors.bgCard1,
+              content: SizedBox(
+                width: size.width - 2 * AppDimensions.defaultHorizontalPadding,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(AppAssets.imgOther4, height: 150),
+                    Text(
+                      "Transaction",
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(color: appColors.softPurple),
+                    ),
+                    const SizedBox(height: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          "Recipient Address",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          AddressUtil.hideAddress(_recipientController.text),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "Time",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          DateTimeFormatUtil.formatDateTime(DateTime.now()),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "Amount",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          _amountController.text,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "Status",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
+                        ),
+                        const SizedBox(height: 10),
+                        StreamBuilder(
+                            stream: _pendingTransactionsService.getStream(txhHash)?.stream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final data = snapshot.data as Map<String, dynamic>;
+                                final status = data['status'] != null ? (data['status']['status'] as String).toUpperCase() : "PENDING";
+                                final statusColor = status == "PENDING" ? appColors.orange : appColors.green;
+                                return Text(
+                                  status,
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: statusColor),
+                                );
+                              }
+                              return Text(
+                                "PROCESSING",
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: appColors.orange),
+                              );
+                            }),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                    CustomButton.secondaryButton(
+                      context: context,
+                      text: "OK",
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
     }
-    // isLoading = true;
-    // final res = await sepoliaTransactionService.sendTransaction(
-    //   amountToSend: double.parse(_amountController.text.trim()),
-    //   privateKey: "e99f2a27be5f8543ddbb6774adaef37b21b99ff7bbd5f1389bca0c6acc75389b",
-    //   recipientAddress: _recipientController.text.trim(),
-    // );
-    // isLoading = false;
-    // print('Transaction hash: $res');
-    // Navigator.pop(context);
   }
 }
 

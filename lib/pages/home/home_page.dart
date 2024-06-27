@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:web3_wallet/blocs/blocs.dart';
+import 'package:web3_wallet/common_widgets/common_widgets.dart';
 import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
 import 'package:web3_wallet/constants/dimensions.dart';
 import 'package:web3_wallet/model/token_model.dart';
@@ -156,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 8),
                       BlocBuilder<WalletCubit, WalletState>(
                         builder: (context, state) {
+                          print(state);
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

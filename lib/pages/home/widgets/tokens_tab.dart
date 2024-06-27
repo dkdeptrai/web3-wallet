@@ -148,7 +148,7 @@ class _ImportTokenDialogState extends State<ImportTokenDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(AppAssets.imgRobot3WithBg, height: 150),
+              Image.asset(AppAssets.imgOther4, height: 150),
               const SizedBox(height: 10),
               Text(
                 "Enter Token Address",
@@ -174,7 +174,7 @@ class _ImportTokenDialogState extends State<ImportTokenDialog> {
               CustomButton.secondaryButton(
                 context: context,
                 onTap: () => _onImportToken(controller.text),
-                text: "Authenticate",
+                text: "Import",
               ),
             ],
           ),
