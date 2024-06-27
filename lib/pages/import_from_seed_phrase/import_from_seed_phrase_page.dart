@@ -125,6 +125,7 @@ class _ImportFromSeedPageState extends State<ImportFromSeedPage> {
           _seedPhraseController.text.trim(),
           _passwordController.text.trim(),
         );
+    await context.read<AuthenticationCubit>().authenticate();
     if (!mounted) return;
     Navigator.pushNamed(context, AuthControlWrapperPage.routeName);
   }

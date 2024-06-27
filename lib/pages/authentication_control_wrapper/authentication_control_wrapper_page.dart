@@ -43,10 +43,10 @@ class _AuthControlWrapperPageState extends State<AuthControlWrapperPage> {
     });
     context.read<AuthenticationCubit>().stream.listen((state) {
       if (state is Authenticated) {
+        print("Authenticated!!!");
         Navigator.pushNamed(context, MainPage.routeName);
       }
       if (state is Unauthenticated) {
-        setState(() {});
         Navigator.pushNamedAndRemoveUntil(context, ChooseLoginMethodPage.routeName, (route) => false);
       }
     });

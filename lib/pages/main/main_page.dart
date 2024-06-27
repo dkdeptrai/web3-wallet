@@ -15,7 +15,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final PendingTransactionServiceImpl _pendingTransactionServiceImpl = GetIt.I<PendingTransactionServiceImpl>();
   int _currentIndex = 0;
   List<String> imagePaths = [
     AppAssets.icHome,
@@ -26,7 +25,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    _pendingTransactionServiceImpl.setHomeContext(context);
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: NavBar(

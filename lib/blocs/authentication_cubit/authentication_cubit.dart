@@ -17,12 +17,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   AuthenticationCubit() : super(const Unauthenticated());
 
-  Future<void> authenticate({required String password}) async {
+  Future<void> verifyPassword({required String password}) async {
     final isValid = await PasswordUtil.verifyPassword(password);
     if (!isValid) {
       emit(const WrongPassword());
       return;
     }
+  }
+
+  Future<void> authenticate() async {
     try {
       String? privateKey = await _walletService.getPrivateKey();
       print("Private key: $privateKey");
