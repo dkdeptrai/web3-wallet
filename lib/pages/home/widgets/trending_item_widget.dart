@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:web3_wallet/common_widgets/custom_svg_image.dart';
 import 'package:web3_wallet/extensions/extensions.dart';
 import 'package:web3_wallet/resources/resources.dart';
