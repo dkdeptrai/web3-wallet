@@ -55,7 +55,6 @@ class _SendTokensPageState extends State<SendTokensPage> {
       ),
       body: BlocListener<SendTokensCubit, SendTokensState>(
         listener: (context, state) {
-          print(state);
           if (state is SendingTokens) {
             showDialog(
               context: context,
@@ -72,6 +71,14 @@ class _SendTokensPageState extends State<SendTokensPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Transaction sent successfully"),
+              ),
+            );
+          }
+          if (state is SendTokensError) {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Sending transaction failed. Please try again later."),
               ),
             );
           }
@@ -216,7 +223,6 @@ class _SendTokensPageState extends State<SendTokensPage> {
   }
 
   Future<void> _sendTransaction() async {
-    print("Sending");
     if (!_formKey.currentState!.validate()) {
       return;
     }

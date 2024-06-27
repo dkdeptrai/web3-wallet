@@ -17,17 +17,21 @@ class SendTokensCubit extends Cubit<SendTokensState> {
     required double amount,
   }) async {
     emit(SendingTokens());
-    String recipient = recipientWalletAddress;
-    final privateKey = await walletService.getPrivateKey();
-    if (privateKey == null) {
-      emit(const SendTokensError('Private key not found'));
-      return;
+    try {
+      String recipient = recipientWalletAddress;
+      final privateKey = await walletService.getPrivateKey();
+      if (privateKey == null) {
+        emit(const SendTokensError('Private key not found'));
+        return;
+      }
+      await sepoliaTransactionService.sendTransaction(
+        privateKey: privateKey,
+        recipientAddress: recipient.trim(),
+        amountToSend: amount.toString(),
+      );
+      emit(const TokensSent());
+    } catch (e) {
+      emit(SendTokensError(e.toString()));
     }
-    await sepoliaTransactionService.sendTransaction(
-      privateKey: privateKey,
-      recipientAddress: recipient.trim(),
-      amountToSend: amount.toString(),
-    );
-    emit(const TokensSent());
   }
 }

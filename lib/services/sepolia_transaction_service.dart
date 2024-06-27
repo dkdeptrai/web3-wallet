@@ -43,6 +43,7 @@ class SepoliaTransactionService extends TransactionService {
       final amountInWei = BigInt.from(double.parse(amountToSend) * pow(10, 18));
 
       final Credentials credentials = EthPrivateKey.fromHex(privateKey);
+      final nonce = await _client!.getTransactionCount(credentials.address);
 
       final gasPrice = await _client!.getGasPrice();
 
@@ -51,20 +52,27 @@ class SepoliaTransactionService extends TransactionService {
         to: EthereumAddress.fromHex(recipientAddress),
         value: EtherAmount.inWei(amountInWei),
         gasPrice: gasPrice,
-        maxGas: 50000000,
+        maxGas: 30000,
+        nonce: nonce,
       );
 
       final signedTx = await _client!.signTransaction(credentials, transaction, chainId: 11155111);
-      final signedTxHex = hexEncode(signedTx); // Convert the byte array to a hexadecimal string
-      print('Signed transaction: $signedTxHex');
+      String signedTxHex = hexEncode(signedTx); // Convert the byte array to a hexadecimal string
+      signedTxHex = signedTxHex.replaceFirst("00", "0x");
+      print('signedTxHex: $signedTxHex');
       String url = "${ApiConstants.apiBaseUrl}/api/web3-helper/send-raw-transaction";
-      final response = await http.post(Uri.parse(url), body: {
-        "transactionHash": signedTxHex,
-        "value": amountToSend,
-        "recipientAddress": recipientAddress,
-        "symbol": "ETH",
-      });
+      final response = await http.post(
+        Uri.parse(url),
+        body: {
+          "transactionHash": signedTxHex,
+          "value": amountToSend,
+          "recipientAddress": recipientAddress,
+          "symbol": "ETH",
+        },
+      );
+      print("Response: ${response.body}");
       String txhash = jsonDecode(response.body)["transactionHash"];
+      print('Transaction hash: $txhash');
       // TODO: Create socket with hash returned
     } catch (e) {
       print('Transaction failed: $e');

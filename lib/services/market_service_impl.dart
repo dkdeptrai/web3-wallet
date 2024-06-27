@@ -1,8 +1,6 @@
 import 'package:web3_wallet/constants/constants.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
 import 'package:web3_wallet/socket_io_stream_wrapper.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 // class MarketServiceImpl implements MarketService {

@@ -30,8 +30,8 @@ class TrendingTab extends StatelessWidget {
                     code: item['code'] ?? "",
                     symbol: item['symbol'] ?? "",
                     imagePath: item['png64'] ?? "",
-                    rate: item['rate'] ?? 0.0,
-                    hourDelta: item['delta']['hour'] ?? "",
+                    rate: item['rate']?.toDouble() ?? 0.0,
+                    hourDelta: item['delta']['hour']?.toDouble() ?? "",
                     colorCode: item['color'] ?? 0,
                   );
                 },

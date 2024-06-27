@@ -156,6 +156,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 8),
                       BlocBuilder<WalletCubit, WalletState>(
                         builder: (context, state) {
+                          print(state);
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
