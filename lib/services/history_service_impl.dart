@@ -32,15 +32,19 @@ class HistoryServiceImpl implements HistoryService {
           "pageSize": size,
         }),
       );
-      print("Response [HistoryServiceImpl.fetchHistory]: ${response.body}");
+      // print("Response [HistoryServiceImpl.fetchHistory]: ${response.body}");
 
       if (response.statusCode == 200) {
-        final List<TransactionModel> transactions = jsonDecode(response.body)['transactions']
-            .map<TransactionModel>((item) => TransactionModel.fromMap(item as Map<String, dynamic>))
-            .toList();
+        final List<TransactionModel> transactions =
+            jsonDecode(response.body)['transactions']
+                .map<TransactionModel>((item) =>
+                    TransactionModel.fromMap(item as Map<String, dynamic>))
+                .toList();
         return transactions;
       } else {
-        throw ApiException(message: "[HistoryServiceImpl.fetchHistory] HTTP error: ${response.statusCode} - ${response.body}");
+        throw ApiException(
+            message:
+                "[HistoryServiceImpl.fetchHistory] HTTP error: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       print("Error [HistoryServiceImpl.fetchHistory]: $e");
