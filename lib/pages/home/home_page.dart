@@ -157,12 +157,11 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 8),
                       BlocBuilder<WalletCubit, WalletState>(
                         builder: (context, state) {
-                          print(state);
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                state is WalletLoaded ? "\$ ${state.balance}" : "...",
+                                state is WalletLoaded ? "ETH ${state.balance}" : "...",
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               if (state is WalletLoaded)
@@ -292,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 20),
                             Expanded(
                               child: PageView(
                                 controller: _pageController,

@@ -2,14 +2,19 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:web3_wallet/constants/constants.dart';
+import 'package:web3_wallet/exceptions/exceptions.dart';
 import 'package:web3_wallet/services/interfaces/interfaces.dart';
+import 'package:web3_wallet/services/pending_transaction_service_impl.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:http/http.dart' as http;
 import 'package:convert/convert.dart';
 
-class OtherTokenService extends TransactionService {
+class OtherTokenService implements TransactionService {
+  final PendingTransactionServiceImpl _pendingTransactionService = GetIt.I<PendingTransactionServiceImpl>();
+
   String? _contractAddress;
   final String _apiUrl = dotenv.env['ALCHEMY_API_KEY']!;
   Web3Client? _client;
@@ -43,7 +48,7 @@ class OtherTokenService extends TransactionService {
   }
 
   @override
-  Future<void> sendTransaction({
+  Future<String?> sendTransaction({
     required String privateKey,
     required String recipientAddress,
     required String amountToSend,
@@ -86,8 +91,12 @@ class OtherTokenService extends TransactionService {
         "recipientAddress": recipientAddress,
         "symbol": tokenSymbol,
       });
-      String txhash = jsonDecode(response.body)["transactionHash"];
-      // TODO: Create socket with hash returned
+      String? txhash = jsonDecode(response.body)["transactionHash"];
+
+      if (txhash == null) throw ApiException(message: "Transaction failed");
+
+      await _pendingTransactionService.createAndAddSocket(txhash);
+      return txhash;
     } catch (e) {
       print('Transaction failed: $e');
       throw ('Transaction failed: $e');
