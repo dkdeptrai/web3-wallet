@@ -4,6 +4,7 @@ import 'package:web3_wallet/services/services.dart';
 
 class ServiceDependencies {
   static Future<void> setUp(GetIt injector) async {
+    injector.registerFactory<AuthService>(() => AuthServiceImpl());
     injector.registerFactory<WalletService>(() => WalletServiceImpl());
     injector.registerFactory<WalletAddressService>(() => ETHWalletService());
     injector.registerFactory<ETHWalletService>(() => ETHWalletService());

@@ -7,3 +7,4 @@ export 'token_service_impl.dart';
 export 'news_service_impl.dart';
 export 'history_service_impl.dart';
 export 'pending_transaction_service_impl.dart';
+export 'auth_service_impl.dart';
