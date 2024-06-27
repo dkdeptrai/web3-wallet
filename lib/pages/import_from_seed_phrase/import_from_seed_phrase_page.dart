@@ -74,6 +74,7 @@ class _ImportFromSeedPageState extends State<ImportFromSeedPage> {
                         controller: _passwordController,
                         context: context,
                         hintText: "Password *",
+                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Password is required";
@@ -89,6 +90,7 @@ class _ImportFromSeedPageState extends State<ImportFromSeedPage> {
                         controller: _confirmPasswordController,
                         context: context,
                         hintText: "Confirm Password *",
+                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Password is required";
@@ -123,6 +125,7 @@ class _ImportFromSeedPageState extends State<ImportFromSeedPage> {
           _seedPhraseController.text.trim(),
           _passwordController.text.trim(),
         );
+    await context.read<AuthenticationCubit>().authenticate();
     if (!mounted) return;
     Navigator.pushNamed(context, AuthControlWrapperPage.routeName);
   }

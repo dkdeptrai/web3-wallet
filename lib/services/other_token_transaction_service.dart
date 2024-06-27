@@ -67,8 +67,8 @@ class OtherTokenService implements TransactionService {
 
       final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'ERC20Token'), EthereumAddress.fromHex(_contractAddress!));
 
-      final tokenDetails = getTokenDetails();
-      final tokenSymbol = tokenDetails.then((value) => value['symbol']);
+      final tokenDetails = await getTokenDetails();
+      final tokenSymbol = tokenDetails['symbol'];
 
       final transferFunction = contract.function('transfer');
       final data = transferFunction.encodeCall([EthereumAddress.fromHex(recipientAddress), amountInWei]);
@@ -78,19 +78,27 @@ class OtherTokenService implements TransactionService {
           function: transferFunction,
           parameters: [EthereumAddress.fromHex(recipientAddress), amountInWei],
           gasPrice: gasPrice,
-          maxGas: 50000000,
+          maxGas: 30000,
           nonce: await _client!.getTransactionCount(credentials.address));
 
       final signedTx = await _client!.signTransaction(credentials, transaction, chainId: 11155111);
 
-      final signedTxHex = hexEncode(signedTx);
+      String signedTxHex = hexEncode(signedTx);
+      signedTxHex = signedTxHex.replaceFirst("00", "0x");
       String url = "${ApiConstants.apiBaseUrl}/api/web3-helper/send-raw-transaction";
-      final response = await http.post(Uri.parse(url), body: {
-        "transactionHash": signedTxHex,
-        "value": amountToSend,
-        "recipientAddress": recipientAddress,
-        "symbol": tokenSymbol,
-      });
+      final response = await http.post(Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(
+            {
+              "transactionHash": signedTxHex,
+              "value": amountToSend,
+              "recipientAddress": recipientAddress,
+              "symbol": tokenSymbol,
+            },
+          ));
+      print("Response: ${response.body}");
       String? txhash = jsonDecode(response.body)["transactionHash"];
 
       if (txhash == null) throw ApiException(message: "Transaction failed");
