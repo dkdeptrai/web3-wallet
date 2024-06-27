@@ -10,7 +10,7 @@ class TrendingItemWidget extends StatelessWidget {
   final String code;
   final String imagePath;
   final double rate;
-  final double hourDelta;
+  final dynamic hourDelta;
   final String colorCode;
 
   const TrendingItemWidget({
@@ -27,12 +27,16 @@ class TrendingItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).extension<AppColors>()!;
-    final deltaPercentage = (hourDelta - 1) * 100;
+    final hourDeltaDouble =
+        (hourDelta is int) ? hourDelta.toDouble() : hourDelta;
+    final deltaPercentage = (hourDeltaDouble - 1) * 100;
 
     return Row(
       children: [
         CircleAvatar(
-          backgroundColor: Color(int.parse("0xFF${colorCode.replaceAll("#", "")}")).withOpacity(0.2),
+          backgroundColor:
+              Color(int.parse("0xFF${colorCode.replaceAll("#", "")}"))
+                  .withOpacity(0.2),
           radius: 25,
           child: Image.network(imagePath, width: 30, height: 30),
         ),
@@ -47,7 +51,10 @@ class TrendingItemWidget extends StatelessWidget {
             const SizedBox(height: 5),
             Text(
               code,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineMedium
+                  ?.copyWith(color: appColors.subTitle),
             ),
           ],
         ),
@@ -64,7 +71,9 @@ class TrendingItemWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CustomSvgImage(
-                  imagePath: deltaPercentage > 0 ? AppAssets.icChevronUp : AppAssets.icChevronDown,
+                  imagePath: deltaPercentage > 0
+                      ? AppAssets.icChevronUp
+                      : AppAssets.icChevronDown,
                   width: 16,
                   height: 16,
                   color: deltaPercentage > 0 ? appColors.green : appColors.red,
@@ -72,7 +81,10 @@ class TrendingItemWidget extends StatelessWidget {
                 const SizedBox(width: 5),
                 Text(
                   "${DecimalFormatUtil.formatDouble(deltaPercentage)}%",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: appColors.subTitle),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(color: appColors.subTitle),
                 ),
               ],
             ),

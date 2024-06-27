@@ -2,6 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_secure_storage (3.3.1):
     - Flutter
+  - image_picker_ios (0.0.1):
+    - Flutter
   - MTBBarcodeScanner (5.0.11)
   - qr_code_scanner (0.2.0):
     - Flutter
@@ -15,6 +17,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
@@ -28,6 +31,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
   shared_preferences_foundation:
@@ -38,6 +43,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
