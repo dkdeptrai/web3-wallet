@@ -145,6 +145,7 @@ class _Step3ContentState extends State<Step3Content> {
 
   void _onNext(List<String> mnemonicWords) async {
     await context.read<WalletCubit>().saveWalletInfo(mnemonicWords);
+    await context.read<AuthenticationCubit>().register();
     if (!mounted) return;
     Navigator.pushNamed(context, CreatePasswordSuccess.routeName);
   }

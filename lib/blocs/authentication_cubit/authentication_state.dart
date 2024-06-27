@@ -8,7 +8,8 @@ sealed class AuthenticationState extends Equatable {
 }
 
 class Authenticated extends AuthenticationState {
-  const Authenticated();
+  final UserModel user;
+  const Authenticated({required this.user});
 
   @override
   List<Object> get props => [];
@@ -26,4 +27,13 @@ class WrongPassword extends AuthenticationState {
 
   @override
   List<Object> get props => [];
+}
+
+class AuthenticationError extends AuthenticationState {
+  final String message;
+
+  const AuthenticationError(this.message);
+
+  @override
+  List<Object> get props => [message];
 }

@@ -9,8 +9,8 @@ part 'wallet_state.dart';
 
 class WalletCubit extends Cubit<WalletState> {
   final WalletService _walletService = GetIt.I<WalletService>();
-  final ETHWalletService walletAddressService = GetIt.I<ETHWalletService>();
-  late SepoliaTransactionService transactionService = GetIt.I<SepoliaTransactionService>();
+  final ETHWalletService _walletAddressService = GetIt.I<ETHWalletService>();
+  late SepoliaTransactionService _transactionService = GetIt.I<SepoliaTransactionService>();
 
   WalletCubit() : super(WalletInitial());
 
@@ -18,18 +18,18 @@ class WalletCubit extends Cubit<WalletState> {
     emit(WalletLoading());
 
     try {
-      if (!transactionService.isInitialized()) {
-        transactionService.init();
+      if (!_transactionService.isInitialized()) {
+        _transactionService.init();
       }
 
       String? privateKey = await _walletService.getPrivateKey();
       print("Private key: $privateKey");
       if (privateKey != null) {
-        EthereumAddress address = await walletAddressService.getPublicKey(privateKey);
+        EthereumAddress address = await _walletAddressService.getPublicKey(privateKey);
         print("Address: ${address.hex}");
         String walletAddress = address.hex;
         String pvKey = privateKey;
-        EtherAmount latestBalance = await transactionService.getBalance(address.hex);
+        EtherAmount latestBalance = await _transactionService.getBalance(address.hex);
         double latestBalanceInEther = latestBalance.getValueInUnit(EtherUnit.ether);
 
         double balance = latestBalanceInEther;
@@ -47,7 +47,7 @@ class WalletCubit extends Cubit<WalletState> {
   }
 
   Future<void> saveWalletInfo(List<String> mnemonicWords) async {
-    String privateKey = await walletAddressService.getPrivateKeyFromMnemonic(mnemonicWords.join(" "));
+    String privateKey = await _walletAddressService.getPrivateKeyFromMnemonic(mnemonicWords.join(" "));
     _walletService.setPrivateKey(privateKey);
   }
 }

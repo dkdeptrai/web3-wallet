@@ -32,7 +32,9 @@ class PendingTransactionServiceImpl implements PendingTransactionsService {
     _pendingTransactionsSockets[transactionHash] = socket;
     final streamWrapper = SocketIoStreamWrapper<Map<String, dynamic>>();
     streamWrapper.listenToEvent(socket, transactionHash, onData: (data) {
-      print('Data: $data');
+      if (data['status']['status'] == "mined") {
+        disconnectSocket(transactionHash);
+      }
     });
     _pendingTransactionsStreams[transactionHash] = streamWrapper;
     print("Hash: ${transactionHash}");

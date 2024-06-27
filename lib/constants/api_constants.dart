@@ -9,4 +9,8 @@ class ApiConstants {
 
   // History apis
   static const String fetchHistories = "$apiBaseUrl/api/web3-helper/get-transaction-history";
+
+  // User
+  static const String login = "$apiBaseUrl/api/users/login";
+  static const String register = "$apiBaseUrl/api/users/register";
 }
