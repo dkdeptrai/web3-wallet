@@ -7,6 +7,8 @@ import '../../model/models.dart';
 import 'package:http/http.dart' as http;
 
 class ContactsPage extends StatefulWidget {
+  const ContactsPage({super.key});
+
   @override
   _ContactsPageState createState() => _ContactsPageState();
   static const routeName = '/contacts';
@@ -31,8 +33,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future<void> fetchContacts() async {
-    const url =
-        '${ApiConstants.apiBaseUrl}/api/users/contacts?userId=1'; // Replace with your actual endpoint URL
+    const url = '${ApiConstants.apiBaseUrl}/api/users/contacts?userId=1'; // Replace with your actual endpoint URL
 
     try {
       final response = await http.get(Uri.parse(url), headers: {
@@ -57,8 +58,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future<void> addContact(String name, String publicAddress) async {
-    const url =
-        '${ApiConstants.apiBaseUrl}/api/users/contacts'; // Replace with your actual endpoint URL
+    const url = '${ApiConstants.apiBaseUrl}/api/users/contacts'; // Replace with your actual endpoint URL
 
     try {
       final response = await http.post(
@@ -92,8 +92,7 @@ class _ContactsPageState extends State<ContactsPage> {
     setState(() {
       filteredContacts = contacts.where((contact) {
         final query = searchController.text.toLowerCase();
-        return contact.name.toLowerCase().contains(query) ||
-            contact.publicAddress.toLowerCase().contains(query);
+        return contact.name.toLowerCase().contains(query) || contact.publicAddress.toLowerCase().contains(query);
       }).toList();
     });
   }
@@ -182,21 +181,18 @@ class _ContactsPageState extends State<ContactsPage> {
         itemCount: filteredContacts.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(filteredContacts[index].name,
-                style: Theme.of(context).textTheme.displayMedium),
+            title: Text(filteredContacts[index].name, style: Theme.of(context).textTheme.displayMedium),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(filteredContacts[index].publicAddress,
-                        style: Theme.of(context).textTheme.displaySmall),
+                    Text(filteredContacts[index].publicAddress, style: Theme.of(context).textTheme.displaySmall),
                     IconButton(
                       icon: Icon(Icons.copy),
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(
-                            text: filteredContacts[index].publicAddress));
+                        Clipboard.setData(ClipboardData(text: filteredContacts[index].publicAddress));
                       },
                     ),
                   ],
