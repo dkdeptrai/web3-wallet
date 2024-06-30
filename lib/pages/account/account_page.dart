@@ -8,7 +8,6 @@ import 'package:web3_wallet/constants/constants.dart';
 import 'package:web3_wallet/pages/account/widgets/update_profile_dialog.dart';
 import 'package:web3_wallet/pages/account/widgets/widgets.dart';
 import 'package:web3_wallet/pages/contacts_page/contacts_page.dart';
-import 'package:web3_wallet/pages/preferences_page/preferences_page.dart';
 import 'package:web3_wallet/resources/resources.dart';
 
 class AccountPage extends StatefulWidget {
@@ -19,17 +18,8 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  String name = "Name";
-
   @override
   Widget build(BuildContext context) {
-    final state = context.read<AuthenticationCubit>().state;
-    print("Name: ${state}");
-
-    if (state is Authenticated) {
-      name = state.user.name;
-      // print("Name: $name");
-    }
     final appColors = Theme.of(context).extension<AppColors>()!;
     final Size size = MediaQuery.of(context).size;
 
@@ -60,8 +50,7 @@ class _AccountPageState extends State<AccountPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.defaultHorizontalPadding),
+                  padding: const EdgeInsets.symmetric(horizontal: AppDimensions.defaultHorizontalPadding),
                   child: Text(
                     "Account",
                     style: Theme.of(context).textTheme.displayLarge,
@@ -69,36 +58,41 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 Stack(
                   children: [
-                    GestureDetector(
-                      onTap: () => _showUpdateProfileDialog(context),
-                      child: Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(
-                          left: AppDimensions.defaultHorizontalPadding,
-                          right: AppDimensions.defaultHorizontalPadding,
-                          top: 25,
-                          bottom: 35,
-                        ),
-                        padding: const EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                          color: appColors.pink,
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              name,
-                              style: Theme.of(context).textTheme.displayMedium,
+                    BlocBuilder<AuthenticationCubit, AuthenticationState>(
+                      builder: (context, state) {
+                        bool authenticated = state is Authenticated;
+                        return GestureDetector(
+                          onTap: () => _showUpdateProfileDialog(context, currentName: authenticated ? state.user.name : ""),
+                          child: Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(
+                              left: AppDimensions.defaultHorizontalPadding,
+                              right: AppDimensions.defaultHorizontalPadding,
+                              top: 25,
+                              bottom: 35,
                             ),
-                            const SizedBox(height: 15),
-                            Text(
-                              "Email@gmail.com",
-                              style: Theme.of(context).textTheme.headlineLarge,
+                            padding: const EdgeInsets.all(30),
+                            decoration: BoxDecoration(
+                              color: appColors.pink,
+                              borderRadius: BorderRadius.circular(25),
                             ),
-                          ],
-                        ),
-                      ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  authenticated ? state.user.name : "Enter name",
+                                  style: Theme.of(context).textTheme.displayMedium,
+                                ),
+                                const SizedBox(height: 15),
+                                Text(
+                                  "Email@gmail.com",
+                                  style: Theme.of(context).textTheme.headlineLarge,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     Align(
                       alignment: Alignment.topRight,
@@ -119,8 +113,7 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                     decoration: BoxDecoration(
                       color: appColors.bgCard2,
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(40)),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
                     ),
                     child: ListView(
                       shrinkWrap: true,
@@ -142,8 +135,7 @@ class _AccountPageState extends State<AccountPage> {
                           iconPath: AppAssets.icProfile,
                           iconBgColor: appColors.orange.withOpacity(0.2),
                           text: "Contacts",
-                          onTap: () => Navigator.pushNamed(
-                              context, ContactsPage.routeName),
+                          onTap: () => Navigator.pushNamed(context, ContactsPage.routeName),
                         ),
                         const SizedBox(height: 40),
                         CustomButton.secondaryButton(
@@ -163,19 +155,15 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  void _showUpdateProfileDialog(BuildContext context) async {
-    final result = await showDialog<Map<String, dynamic>>(
+  void _showUpdateProfileDialog(BuildContext context, {required String currentName}) async {
+    await showDialog(
       context: context,
-      builder: (context) => UpdateProfileDialog(
-        currentName: name,
-      ),
+      builder: (context) {
+        return UpdateProfileDialog(
+          currentName: currentName,
+        );
+      },
     );
-
-    if (result != null && result['name'] != null) {
-      setState(() {
-        name = result['name'];
-      });
-    }
   }
 
   void _onLogout(BuildContext context) {

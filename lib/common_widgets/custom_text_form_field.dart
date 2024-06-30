@@ -51,7 +51,7 @@ class CustomTextFormField extends StatelessWidget {
     return CustomTextFormField._(
       controller: controller,
       hintText: hintText,
-      backgroundColor: backgroundColor ?? appColors.bgCard1,
+      backgroundColor: backgroundColor ?? appColors.bgCard2,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       hintTextColor: hintTextColor ?? appColors.subTitle,
       validator: validator,

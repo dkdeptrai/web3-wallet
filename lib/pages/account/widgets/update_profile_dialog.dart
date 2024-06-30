@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:web3_wallet/common_widgets/common_widgets.dart';
+import 'package:web3_wallet/constants/constants.dart';
 import 'package:web3_wallet/resources/resources.dart';
 
 class UpdateProfileDialog extends StatefulWidget {
@@ -30,54 +32,47 @@ class _UpdateProfileDialogState extends State<UpdateProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
+    final appColors = Theme.of(context).extension<AppColors>()!;
+    final Size size = MediaQuery.of(context).size;
+
+    return AlertDialog(
+      backgroundColor: appColors.bgCard1,
+      content: SizedBox(
+        width: size.width - 2 * AppDimensions.defaultHorizontalPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Update Profile',
-              style: Theme.of(context).textTheme.headlineSmall,
+              "Update profile",
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(color: appColors.softPurple),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            const SizedBox(height: 30),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close dialog without saving
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                  ),
+                Text(
+                  "Name",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: appColors.softPurple),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, {
-                      'name': _nameController.text,
-                    }); // Return updated name
+                const SizedBox(height: 10),
+                CustomTextFormField.primary(
+                  controller: _nameController,
+                  context: context,
+                  hintText: "Name",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Name is required";
+                    }
+                    return null;
                   },
-                  child: Text('Save'),
-                ),
+                )
               ],
+            ),
+            const SizedBox(height: 20),
+            CustomButton.secondaryButton(
+              context: context,
+              text: "Update",
+              onTap: () {},
             ),
           ],
         ),
